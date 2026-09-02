@@ -1,87 +1,96 @@
 import { Link } from "expo-router";
-import React from "react";
 import {
+  Alert,
   Image,
-  Pressable,
   ScrollView,
   StyleSheet,
-  View,
+  TouchableOpacity,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { REPUESTOS, SECCIONES } from "@/constants/data";
+
+{
+  /*variable que tiene las partes. por ahora se utiliza asi.*/
+}
+const parts = [
+  {
+    id: "motor",
+    title: "Motor",
+    image: require("@/assets/images/motor.jpg"),
+    description: "Partes del motor: pistones, bielas, árbol de levas y más.",
+  },
+  {
+    id: "suspension",
+    title: "Suspensión",
+    image: require("@/assets/images/suspensiones.jpg"),
+    description: "Amortiguadores y componentes de la suspensión.",
+  },
+  {
+    id: "frenos",
+    title: "Frenos",
+    image: require("@/assets/images/frenos.jpg"),
+    description: "Discos, pastillas y líneas de freno para seguridad.",
+  },
+  {
+    id: "carroceria",
+    title: "Carrocería",
+    image: require("@/assets/images/carroceria.jpg"),
+    description: "Paneles, pintura, paragolpes y partes exteriores.",
+  },
+];
+
+{
+  /*funcion default que es la que devuelve la pantalla de catalogo. */
+}
 
 export default function CatalogoScreen() {
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <ThemedView style={styles.headerContainer}>
+    <SafeAreaView style={styles.safeArea} edges={["top"]}>
+      <ScrollView contentContainerStyle={styles.container}>
         <ThemedText type="title" style={styles.header}>
-          Catálogo <ThemedText style={styles.brand}>Daitona</ThemedText>
+          Repuestos <ThemedText style={styles.brand}>Daitona</ThemedText>
         </ThemedText>
-        <ThemedText style={styles.subtitle}>
-          Selecciona una sección para explorar los repuestos disponibles:
-        </ThemedText>
-      </ThemedView>
 
-      {SECCIONES.map((seccion) => {
-        const cantidad = REPUESTOS.filter(
-          (r) => r.categoriaId === seccion.id
-        ).length;
-
-        return (
-          <ThemedView key={seccion.id} style={styles.card}>
+      {parts.map((p) => (
+        <ThemedView key={p.id} style={styles.card}>
+          <TouchableOpacity onPress={() => Alert.alert(p.title, p.description)}>
+            <Image source={p.image} style={styles.image} />
+          </TouchableOpacity>
+          <ThemedView style={styles.cardContent}>
+            <ThemedText type="subtitle">{p.title}</ThemedText>
+            <ThemedText>{p.description}</ThemedText>
             <Link
-              href={{ pathname: "/parts/[id]", params: { id: seccion.id } }}
-              asChild
+              href={{ pathname: "/parts/[id]", params: { id: p.id } }}
+              style={styles.link}
             >
-              <Pressable style={({ pressed }) => [pressed && styles.pressed]}>
-                <View style={styles.imageContainer}>
-                  <Image
-                    source={{ uri: seccion.imagen }}
-                    style={styles.image}
-                    resizeMode="cover"
-                  />
-                  <View style={styles.badgeContainer}>
-                    <ThemedText style={styles.badgeText}>
-                      {cantidad} {cantidad === 1 ? "repuesto" : "repuestos"}
-                    </ThemedText>
-                  </View>
-                </View>
-
-                <View style={styles.cardContent}>
-                  <ThemedText type="subtitle" style={styles.cardTitle}>
-                    {seccion.titulo}
-                  </ThemedText>
-                  <ThemedText style={styles.cardDescription}>
-                    {seccion.descripcion}
-                  </ThemedText>
-                  <View style={styles.actionRow}>
-                    <ThemedText type="defaultSemiBold" style={styles.linkText}>
-                      Ver repuestos →
-                    </ThemedText>
-                  </View>
-                </View>
-              </Pressable>
+              <ThemedText type="defaultSemiBold">Ver detalles</ThemedText>
             </Link>
           </ThemedView>
-        );
-      })}
+        </ThemedView>
+      ))}
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
   container: {
     padding: 16,
     paddingBottom: 32,
+    // justifyContent: "center",
+    //alignItems: "center",
   },
-  headerContainer: {
-    marginBottom: 20,
+  text: {
+    marginTop: 8,
   },
   header: {
     fontSize: 28,
-    marginBottom: 4,
+    marginBottom: 12,
   },
   brand: {
     color: "#c00",
@@ -89,66 +98,21 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     lineHeight: 32,
   },
-  subtitle: {
-    fontSize: 15,
-    opacity: 0.8,
-  },
   card: {
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
+    backgroundColor: "#fff",
+    borderRadius: 8,
     overflow: "hidden",
-    marginBottom: 16,
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  pressed: {
-    opacity: 0.85,
-  },
-  imageContainer: {
-    position: "relative",
+    marginBottom: 12,
+    elevation: 2,
   },
   image: {
     width: "100%",
-    height: 160,
-  },
-  badgeContainer: {
-    position: "absolute",
-    top: 12,
-    right: 12,
-    backgroundColor: "rgba(0, 0, 0, 0.75)",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  badgeText: {
-    color: "#ffffff",
-    fontSize: 12,
-    fontWeight: "600",
+    height: 180,
   },
   cardContent: {
-    padding: 14,
+    padding: 12,
   },
-  cardTitle: {
-    fontSize: 20,
-    color: "#1a1a1a",
-    marginBottom: 4,
-  },
-  cardDescription: {
-    fontSize: 14,
-    color: "#555555",
-    lineHeight: 20,
-    marginBottom: 10,
-  },
-  actionRow: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-  linkText: {
-    color: "#c00",
-    fontSize: 15,
+  link: {
+    marginTop: 8,
   },
 });
