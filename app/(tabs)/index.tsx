@@ -1,10 +1,9 @@
 import { Image } from "expo-image";
-import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import { Alert, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Link } from "expo-router";
-import { Alert } from "react-native";
 
 const parts = [
   {
