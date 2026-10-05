@@ -1,65 +1,98 @@
-import { Link } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
   Image,
-  Pressable,
   ScrollView,
   StyleSheet,
+  TextInput,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 
 import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
-import { SECCIONES } from "@/constants/data";
+
+const BRANDS = [
+  {
+    id: "vw",
+    name: "Volkswagen",
+    logo: require("@/assets/images/logos/vw.png"),
+  },
+  {
+    id: "renault",
+    name: "Renault",
+    logo: require("@/assets/images/logos/renault.png"),
+  },
+  {
+    id: "chevrolet",
+    name: "Chevrolet",
+    logo: require("@/assets/images/logos/chevrolet.jpg"),
+  },
+  {
+    id: "ford",
+    name: "Ford",
+    logo: require("@/assets/images/logos/ford.png"),
+  },
+  {
+    id: "toyota",
+    name: "Toyota",
+    logo: require("@/assets/images/logos/toyota.jpg"),
+  },
+  {
+    id: "fiat",
+    name: "Fiat",
+    logo: require("@/assets/images/logos/fiat.jpg"),
+  },
+];
 
 export default function HomeScreen() {
+  const [searchText, setSearchText] = useState("");
+
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <ThemedView style={styles.heroCard}>
-        <ThemedText type="title" style={styles.header}>
-          Repuestos <ThemedText style={styles.brand}>Daitona</ThemedText>
-        </ThemedText>
-        <ThemedText style={styles.heroSub}>
-          Tu canal directo para consultar catálogo, precios y repuestos de todas las marcas.
-        </ThemedText>
-      </ThemedView>
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+        {/* Header Logo */}
+        <View style={styles.logoContainer}>
+          <View style={styles.flagRow}>
+            <MaterialCommunityIcons name="flag-checkered" size={32} color="#111" />
+            <MaterialCommunityIcons name="flag-checkered" size={32} color="#c00" />
+          </View>
+          <View style={styles.brandTitleRow}>
+            <ThemedText style={styles.daytonaTextRed}>DAY</ThemedText>
+            <ThemedText style={styles.daytonaTextBlack}>TONA</ThemedText>
+          </View>
+          <View style={styles.logoCurvedLine} />
+        </View>
 
-      <ThemedText type="subtitle" style={styles.sectionHeading}>
-        Secciones Destacadas
-      </ThemedText>
-
-      <View style={styles.grid}>
-        {SECCIONES.map((seccion) => (
-          <Link
-            key={seccion.id}
-            href={{ pathname: "/parts/[id]", params: { id: seccion.id } }}
-            asChild
-          >
-            <Pressable style={({ pressed }) => [styles.gridItem, pressed && styles.pressed]}>
-              <Image source={{ uri: seccion.imagen }} style={styles.gridImage} />
-              <View style={styles.gridOverlay}>
-                <ThemedText style={styles.gridTitle}>{seccion.titulo}</ThemedText>
-              </View>
-            </Pressable>
-          </Link>
-        ))}
-      </View>
-
-      <ThemedView style={styles.infoCard}>
-        <ThemedText type="subtitle" style={styles.infoTitle}>
-          ¿Necesitas asesoramiento?
+        {/* Subtitle */}
+        <ThemedText style={styles.subtitle}>
+          Encontrá repuestos para estas y más marcas líderes:
         </ThemedText>
-        <ThemedText style={styles.infoText}>
-          Consulta precios y disponibilidad en tiempo real explorando nuestro catálogo o comunicándote con nuestro equipo.
-        </ThemedText>
-        <Link href="/(tabs)/contacto" asChild>
-          <Pressable style={styles.contactBtn}>
-            <ThemedText style={styles.contactBtnText}>Contactar Tienda</ThemedText>
-          </Pressable>
-        </Link>
-      </ThemedView>
+
+        {/* Brand Grid */}
+        <View style={styles.brandGrid}>
+          {BRANDS.map((brand) => (
+            <TouchableOpacity key={brand.id} style={styles.brandCard} activeOpacity={0.7}>
+              <Image
+                source={brand.logo}
+                style={styles.brandLogo}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Search Bar */}
+        <View style={styles.searchContainer}>
+          <Ionicons name="search-outline" size={22} color="#666" style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Buscá por modelo, año o número de pieza..."
+            placeholderTextColor="#888"
+            value={searchText}
+            onChangeText={setSearchText}
+          />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -68,98 +101,108 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    backgroundColor: "#f7f7f9",
   },
   container: {
-    padding: 16,
-    paddingBottom: 32,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 40,
+    alignItems: "center",
   },
-  heroCard: {
-    backgroundColor: "#1a1a1a",
-    borderRadius: 12,
-    padding: 20,
+  logoContainer: {
+    alignItems: "center",
+    marginTop: 10,
     marginBottom: 20,
   },
-  header: {
-    fontSize: 28,
-    color: "#ffffff",
-    marginBottom: 8,
+  flagRow: {
+    flexDirection: "row",
+    gap: 4,
+    marginBottom: -6,
   },
-  brand: {
-    color: "#c00",
-    fontSize: 28,
-    fontWeight: "bold",
-    lineHeight: 32,
+  brandTitleRow: {
+    flexDirection: "row",
+    alignItems: "center",
   },
-  heroSub: {
-    color: "#cccccc",
-    fontSize: 15,
-    lineHeight: 22,
+  daytonaTextRed: {
+    fontSize: 40,
+    fontWeight: "900",
+    color: "#d32f2f",
+    letterSpacing: 2,
+    fontStyle: "italic",
   },
-  sectionHeading: {
-    fontSize: 20,
-    marginBottom: 12,
+  daytonaTextBlack: {
+    fontSize: 40,
+    fontWeight: "900",
+    color: "#111111",
+    letterSpacing: 2,
+    fontStyle: "italic",
   },
-  grid: {
+  logoCurvedLine: {
+    width: 200,
+    height: 4,
+    backgroundColor: "#d32f2f",
+    borderRadius: 2,
+    marginTop: 2,
+  },
+  subtitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    textAlign: "center",
+    color: "#222",
+    lineHeight: 26,
+    marginBottom: 24,
+    paddingHorizontal: 10,
+  },
+  brandGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
-    marginBottom: 20,
-  },
-  gridItem: {
-    width: "48%",
-    height: 120,
-    borderRadius: 10,
-    overflow: "hidden",
-    marginBottom: 12,
-    position: "relative",
-    backgroundColor: "#000",
-  },
-  pressed: {
-    opacity: 0.8,
-  },
-  gridImage: {
     width: "100%",
-    height: "100%",
-    opacity: 0.75,
+    gap: 12,
+    marginBottom: 28,
   },
-  gridOverlay: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 8,
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  gridTitle: {
-    color: "#ffffff",
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-  infoCard: {
+  brandCard: {
+    width: "30%",
+    height: 95,
     backgroundColor: "#ffffff",
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 14,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#e8e8e8",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
     elevation: 2,
   },
-  infoTitle: {
-    fontSize: 18,
-    color: "#1a1a1a",
-    marginBottom: 6,
+  brandLogo: {
+    width: "100%",
+    height: "100%",
   },
-  infoText: {
-    fontSize: 14,
-    color: "#555555",
-    lineHeight: 20,
-    marginBottom: 12,
-  },
-  contactBtn: {
-    backgroundColor: "#c00",
-    paddingVertical: 10,
-    borderRadius: 8,
+  searchContainer: {
+    flexDirection: "row",
     alignItems: "center",
+    backgroundColor: "#ffffff",
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    width: "100%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  contactBtnText: {
-    color: "#ffffff",
-    fontWeight: "bold",
+  searchIcon: {
+    marginRight: 10,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 15,
+    color: "#222",
   },
 });
