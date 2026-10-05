@@ -1,98 +1,87 @@
 import { Link } from "expo-router";
+import React from "react";
 import {
-  Alert,
   Image,
+  Pressable,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
+  View,
 } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-
-{
-  /*variable que tiene las partes. por ahora se utiliza asi.*/
-}
-const parts = [
-  {
-    id: "motor",
-    title: "Motor",
-    image: {
-      uri: "https://upload.wikimedia.org/wikipedia/commons/8/8b/Car_engine_01.jpg",
-    },
-    description: "Partes del motor: pistones, bielas, árbol de levas y más.",
-  },
-  {
-    id: "suspension",
-    title: "Suspensión",
-    image: {
-      uri: "https://upload.wikimedia.org/wikipedia/commons/3/31/Shock_absorber.png",
-    },
-    description: "Amortiguadores y componentes de la suspensión.",
-  },
-  {
-    id: "frenos",
-    title: "Frenos",
-    image: {
-      uri: "https://upload.wikimedia.org/wikipedia/commons/7/72/Disk_brake_dsc03682.jpg",
-    },
-    description: "Discos, pastillas y líneas de freno para seguridad.",
-  },
-  {
-    id: "carroceria",
-    title: "Carrocería",
-    image: {
-      uri: "https://upload.wikimedia.org/wikipedia/commons/7/72/Toyota_Corolla_Hatchback_Hybrid_%28front%29.jpg",
-    },
-    description: "Paneles, pintura, paragolpes y partes exteriores.",
-  },
-];
-
-{
-  /*funcion default que es la que devuelve la pantalla de catalogo. */
-}
+import { REPUESTOS, SECCIONES } from "@/constants/data";
 
 export default function CatalogoScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <ThemedText type="title" style={styles.header}>
-        Repuestos <ThemedText style={styles.brand}>Daitona</ThemedText>
-      </ThemedText>
+      <ThemedView style={styles.headerContainer}>
+        <ThemedText type="title" style={styles.header}>
+          Catálogo <ThemedText style={styles.brand}>Daitona</ThemedText>
+        </ThemedText>
+        <ThemedText style={styles.subtitle}>
+          Selecciona una sección para explorar los repuestos disponibles:
+        </ThemedText>
+      </ThemedView>
 
-      {parts.map((p) => (
-        <ThemedView key={p.id} style={styles.card}>
-          <TouchableOpacity onPress={() => Alert.alert(p.title, p.description)}>
-            <Image source={p.image} style={styles.image} />
-          </TouchableOpacity>
-          <ThemedView style={styles.cardContent}>
-            <ThemedText type="subtitle">{p.title}</ThemedText>
-            <ThemedText>{p.description}</ThemedText>
+      {SECCIONES.map((seccion) => {
+        const cantidad = REPUESTOS.filter(
+          (r) => r.categoriaId === seccion.id
+        ).length;
+
+        return (
+          <ThemedView key={seccion.id} style={styles.card}>
             <Link
-              href={{ pathname: "/parts/[id]", params: { id: p.id } }}
-              style={styles.link}
+              href={{ pathname: "/parts/[id]", params: { id: seccion.id } }}
+              asChild
             >
-              <ThemedText type="defaultSemiBold">Ver detalles</ThemedText>
+              <Pressable style={({ pressed }) => [pressed && styles.pressed]}>
+                <View style={styles.imageContainer}>
+                  <Image
+                    source={{ uri: seccion.imagen }}
+                    style={styles.image}
+                    resizeMode="cover"
+                  />
+                  <View style={styles.badgeContainer}>
+                    <ThemedText style={styles.badgeText}>
+                      {cantidad} {cantidad === 1 ? "repuesto" : "repuestos"}
+                    </ThemedText>
+                  </View>
+                </View>
+
+                <View style={styles.cardContent}>
+                  <ThemedText type="subtitle" style={styles.cardTitle}>
+                    {seccion.titulo}
+                  </ThemedText>
+                  <ThemedText style={styles.cardDescription}>
+                    {seccion.descripcion}
+                  </ThemedText>
+                  <View style={styles.actionRow}>
+                    <ThemedText type="defaultSemiBold" style={styles.linkText}>
+                      Ver repuestos →
+                    </ThemedText>
+                  </View>
+                </View>
+              </Pressable>
             </Link>
           </ThemedView>
-        </ThemedView>
-      ))}
+        );
+      })}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 16,
-    // justifyContent: "center",
-    //alignItems: "center",
+    paddingBottom: 32,
   },
-  text: {
-    marginTop: 8,
+  headerContainer: {
+    marginBottom: 20,
   },
   header: {
     fontSize: 28,
-    marginBottom: 12,
+    marginBottom: 4,
   },
   brand: {
     color: "#c00",
@@ -100,21 +89,66 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     lineHeight: 32,
   },
+  subtitle: {
+    fontSize: 15,
+    opacity: 0.8,
+  },
   card: {
-    backgroundColor: "#fff",
-    borderRadius: 8,
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
     overflow: "hidden",
-    marginBottom: 12,
-    elevation: 2,
+    marginBottom: 16,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  pressed: {
+    opacity: 0.85,
+  },
+  imageContainer: {
+    position: "relative",
   },
   image: {
     width: "100%",
-    height: 180,
+    height: 160,
+  },
+  badgeContainer: {
+    position: "absolute",
+    top: 12,
+    right: 12,
+    backgroundColor: "rgba(0, 0, 0, 0.75)",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  badgeText: {
+    color: "#ffffff",
+    fontSize: 12,
+    fontWeight: "600",
   },
   cardContent: {
-    padding: 12,
+    padding: 14,
   },
-  link: {
-    marginTop: 8,
+  cardTitle: {
+    fontSize: 20,
+    color: "#1a1a1a",
+    marginBottom: 4,
+  },
+  cardDescription: {
+    fontSize: 14,
+    color: "#555555",
+    lineHeight: 20,
+    marginBottom: 10,
+  },
+  actionRow: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
+  linkText: {
+    color: "#c00",
+    fontSize: 15,
   },
 });

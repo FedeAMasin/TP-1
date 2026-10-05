@@ -1,51 +1,231 @@
+export interface Seccion {
+  id: string;
+  titulo: string;
+  descripcion: string;
+  imagen: string;
+}
+
 export interface Repuesto {
   id: string;
   nombre: string;
-  categoria: string;
+  categoriaId: string;
+  categoriaNombre: string;
   descripcion: string;
   precio: number;
   imagen: string;
 }
 
-export const REPUESTOS: Repuesto[] = [
+export function normalizeCategory(str?: string): string {
+  if (!str) return "";
+  return str
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
+export const SECCIONES: Seccion[] = [
   {
-    id: "1",
-    nombre: "Juego de Pastillas de Freno",
-    categoria: "Frenos",
-    descripcion: "Pastillas delanteras comunes, buena calidad y no chillan al frenar.",
-    precio: 45500,
-    imagen: "https://http2.mlstatic.com/D_NQ_NP_2X_699431-MLA114020064552_072026-F.webp",
+    id: "motor",
+    titulo: "Motor",
+    descripcion: "Pistones, bielas, kit de distribución, válvulas, bujías y componentes internos.",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/8/8b/Car_engine_01.jpg",
   },
   {
-    id: "2",
-    nombre: "Kit de Filtros y Aceite 5W-30",
-    categoria: "Mantenimiento",
-    descripcion: "Viene con filtro de aire, aceite y el bidón de 4 litros. Listo para hacerle el service.",
-    precio: 78000,
+    id: "suspension",
+    titulo: "Suspensión y Dirección",
+    descripcion: "Amortiguadores, espirales, cazoletas, bieletas y extremos de dirección.",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/3/31/Shock_absorber.png",
+  },
+  {
+    id: "frenos",
+    titulo: "Frenos",
+    descripcion: "Pastillas de freno, discos ventilados, líquido DOT 4 y bomba de freno.",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/7/72/Disk_brake_dsc03682.jpg",
+  },
+  {
+    id: "carroceria",
+    titulo: "Carrocería e Iluminación",
+    descripcion: "Paragolpes, espejos retrovisores, ópticas, faros y paneles exteriores.",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/7/72/Toyota_Corolla_Hatchback_Hybrid_%28front%29.jpg",
+  },
+  {
+    id: "mantenimiento",
+    titulo: "Mantenimiento y Filtros",
+    descripcion: "Aceites sintéticos, filtros de aire, aceite, combustible y refrigerantes.",
     imagen: "https://http2.mlstatic.com/D_NQ_NP_2X_774267-MLA78905088030_092024-F.webp",
   },
   {
+    id: "electricidad",
+    titulo: "Electricidad y Encendido",
+    descripcion: "Baterías, alternadores, motores de arranque, cables y sensores.",
+    imagen: "https://http2.mlstatic.com/D_NQ_NP_2X_629442-MLA92490220302_092025-F.webp",
+  },
+];
+
+export const REPUESTOS: Repuesto[] = [
+  // --- MOTOR ---
+  {
+    id: "5",
+    nombre: "Kit de Distribución Completo + Bomba de Agua",
+    categoriaId: "motor",
+    categoriaNombre: "Motor",
+    descripcion: "Incluye correa de distribución reforzada, tensor automático, rodamiento guía y bomba de agua de alto caudal.",
+    precio: 121000,
+    imagen: "https://http2.mlstatic.com/D_NQ_NP_2X_628316-MLA84098798709_042025-F.webp",
+  },
+  {
+    id: "501",
+    nombre: "Juego de Juntas de Tapa de Cilindros",
+    categoriaId: "motor",
+    categoriaNombre: "Motor",
+    descripcion: "Junta multilámina MLS de alta compresión y sellado térmico superior para motores de 16V.",
+    precio: 52000,
+    imagen: "https://http2.mlstatic.com/D_NQ_NP_2X_829103-MLA50921039102_072022-F.webp",
+  },
+  {
+    id: "502",
+    nombre: "Juego de Pistones y Aros de Compresión",
+    categoriaId: "motor",
+    categoriaNombre: "Motor",
+    descripcion: "Pistones de aleación de aluminio hiper-eutéctica con aros cromados de baja fricción.",
+    precio: 145000,
+    imagen: "https://http2.mlstatic.com/D_NQ_NP_2X_910382-MLA48019230192_112021-F.webp",
+  },
+
+  // --- SUSPENSIÓN ---
+  {
     id: "3",
-    nombre: "Amortiguador Delantero (Gas)",
-    categoria: "Suspensión",
-    descripcion: "Amortiguador reforzado, ideal para aguantar los baches de la ciudad.",
+    nombre: "Amortiguador Delantero Presurizado (Gas)",
+    categoriaId: "suspension",
+    categoriaNombre: "Suspensión y Dirección",
+    descripcion: "Amortiguador reforzado a gas de doble tubo. Diseñado para absorber impactos en calles y rutas.",
     precio: 92500,
     imagen: "https://http2.mlstatic.com/D_NQ_NP_2X_684315-MLA95800169558_102025-F.webp",
   },
   {
+    id: "301",
+    nombre: "Kit de Crapodinas y Cazoletas Delanteras",
+    categoriaId: "suspension",
+    categoriaNombre: "Suspensión y Dirección",
+    descripcion: "Cazoletas con crapodinas blindadas integradas para dirección suave y absorción de ruidos.",
+    precio: 38900,
+    imagen: "https://http2.mlstatic.com/D_NQ_NP_2X_910321-MLA48019310210_102021-F.webp",
+  },
+  {
+    id: "302",
+    nombre: "Juego de Espirales Progresivos (Par)",
+    categoriaId: "suspension",
+    categoriaNombre: "Suspensión y Dirección",
+    descripcion: "Mejora la tenida en curva y reduce la altura manteniendo un andar suave en ciudad.",
+    precio: 67000,
+    imagen: "https://http2.mlstatic.com/D_NQ_NP_2X_891023-MLA50192039102_062022-F.webp",
+  },
+
+  // --- FRENOS ---
+  {
+    id: "1",
+    nombre: "Juego de Pastillas de Freno Delanteras Cerámicas",
+    categoriaId: "frenos",
+    categoriaNombre: "Frenos",
+    descripcion: "Pastillas cerámicas de alto rendimiento. Excelente frenado en seco y mojado, libres de ruidos y polvo.",
+    precio: 45500,
+    imagen: "https://http2.mlstatic.com/D_NQ_NP_2X_699431-MLA114020064552_072026-F.webp",
+  },
+  {
+    id: "101",
+    nombre: "Juego de Discos de Freno Ventilados (Par)",
+    categoriaId: "frenos",
+    categoriaNombre: "Frenos",
+    descripcion: "Discos de freno hiper-ventilados, fabricados en aleación de hierro nodular con disipación térmica.",
+    precio: 82000,
+    imagen: "https://http2.mlstatic.com/D_NQ_NP_2X_722215-MLA44036113824_112020-F.webp",
+  },
+  {
+    id: "102",
+    nombre: "Líquido de Frenos Sintético DOT 4 (500ml)",
+    categoriaId: "frenos",
+    categoriaNombre: "Frenos",
+    descripcion: "Sintético de alto punto de ebullición apto para sistemas ABS, ESP y de disco tradicional.",
+    precio: 12500,
+    imagen: "https://http2.mlstatic.com/D_NQ_NP_2X_892301-MLA45302198031_032021-F.webp",
+  },
+
+  // --- CARROCERÍA ---
+  {
+    id: "6",
+    nombre: "Espejo Retrovisor Eléctrico con Luz Giro LED",
+    categoriaId: "carroceria",
+    categoriaNombre: "Carrocería e Iluminación",
+    descripcion: "Espejo exterior comando eléctrico con guiño LED integrado y espejo cóncavo desempañador.",
+    precio: 64000,
+    imagen: "https://http2.mlstatic.com/D_NQ_NP_2X_912034-MLA49019203910_022022-F.webp",
+  },
+  {
+    id: "601",
+    nombre: "Faro Principal Delantero con Lupa / LED",
+    categoriaId: "carroceria",
+    categoriaNombre: "Carrocería e Iluminación",
+    descripcion: "Óptica delantera de policarbonato reforzado con lupas proyectoras de gran alcance y regulación.",
+    precio: 110000,
+    imagen: "https://http2.mlstatic.com/D_NQ_NP_2X_730219-MLA51920391020_102022-F.webp",
+  },
+  {
+    id: "602",
+    nombre: "Paragolpes Delantero con Calce Original",
+    categoriaId: "carroceria",
+    categoriaNombre: "Carrocería e Iluminación",
+    descripcion: "Inyectado en polipropileno flexible con capa de primer listo para pintar del color del vehículo.",
+    precio: 89000,
+    imagen: "https://http2.mlstatic.com/D_NQ_NP_2X_829102-MLA51029301920_082022-F.webp",
+  },
+
+  // --- MANTENIMIENTO ---
+  {
+    id: "2",
+    nombre: "Kit Completo de Filtros y Aceite Sintético 5W-30",
+    categoriaId: "mantenimiento",
+    categoriaNombre: "Mantenimiento y Filtros",
+    descripcion: "Incluye filtro de aire, filtro de aceite, filtro de habitáculo antipolen y bidón de 4L de aceite sintético.",
+    precio: 78000,
+    imagen: "https://http2.mlstatic.com/D_NQ_NP_2X_774267-MLA78905088030_092024-F.webp",
+  },
+  {
+    id: "201",
+    nombre: "Líquido Refrigerante Orgánico Concentrado (1L)",
+    categoriaId: "mantenimiento",
+    categoriaNombre: "Mantenimiento y Filtros",
+    descripcion: "Protección anticorrosiva extrema para radiadores de aluminio y rango de -35°C a +125°C.",
+    precio: 15400,
+    imagen: "https://http2.mlstatic.com/D_NQ_NP_2X_804312-MLA51201923019_082022-F.webp",
+  },
+  {
+    id: "202",
+    nombre: "Aditivo Limpiador de Inyectores Multiválvulas",
+    categoriaId: "mantenimiento",
+    categoriaNombre: "Mantenimiento y Filtros",
+    descripcion: "Restaura la potencia del motor, remueve depósitos en válvulas de admisión e inyectores.",
+    precio: 18900,
+    imagen: "https://http2.mlstatic.com/D_NQ_NP_2X_710293-MLA49102930192_032022-F.webp",
+  },
+
+  // --- ELECTRICIDAD ---
+  {
     id: "4",
-    nombre: "Batería 12V 75Ah",
-    categoria: "Electricidad",
-    descripcion: "Batería reforzada, libre de mantenimiento. Arranca de una en invierno.",
+    nombre: "Batería 12V 75Ah Libre Mantenimiento",
+    categoriaId: "electricidad",
+    categoriaNombre: "Electricidad y Encendido",
+    descripcion: "Batería reforzada con aleación de plata-calcio. Garantiza arranque inmediato en temperaturas extremas.",
     precio: 135000,
     imagen: "https://http2.mlstatic.com/D_NQ_NP_2X_629442-MLA92490220302_092025-F.webp",
   },
   {
-    id: "5",
-    nombre: "Kit de Distribución + Bomba",
-    categoria: "Motor",
-    descripcion: "Trae correa, tensor y la bomba de agua. Kit completo para el cambio.",
-    precio: 121000,
-    imagen: "https://http2.mlstatic.com/D_NQ_NP_2X_628316-MLA84098798709_042025-F.webp",
+    id: "401",
+    nombre: "Juego de Bujías de Iridium High Performance (x4)",
+    categoriaId: "electricidad",
+    categoriaNombre: "Electricidad y Encendido",
+    descripcion: "Bujías de iridio de encendido rápido, reducen consumo y mejoran la respuesta del acelerador.",
+    precio: 34000,
+    imagen: "https://http2.mlstatic.com/D_NQ_NP_2X_789012-MLA46029301920_052021-F.webp",
   },
 ];
