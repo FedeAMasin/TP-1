@@ -18,25 +18,25 @@ const parts = [
   {
     id: "motor",
     title: "Motor",
-    image: require("@/assets/images/motor.jpg"),
+    image: require("@/assets/images/Catalogo/motor.jpg"),
     description: "Partes del motor: pistones, bielas, árbol de levas y más.",
   },
   {
     id: "suspension",
     title: "Suspensión",
-    image: require("@/assets/images/suspensiones.jpg"),
+    image: require("@/assets/images/Catalogo/suspensiones.jpg"),
     description: "Amortiguadores y componentes de la suspensión.",
   },
   {
     id: "frenos",
     title: "Frenos",
-    image: require("@/assets/images/frenos.jpg"),
+    image: require("@/assets/images/Catalogo/frenos.jpg"),
     description: "Discos, pastillas y líneas de freno para seguridad.",
   },
   {
     id: "carroceria",
     title: "Carrocería",
-    image: require("@/assets/images/carroceria.jpg"),
+    image: require("@/assets/images/Catalogo/carroceria.jpg"),
     description: "Paneles, pintura, paragolpes y partes exteriores.",
   },
 ];
