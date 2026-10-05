@@ -74,6 +74,14 @@ export default function SectionPartsScreen() {
                     {repuesto.categoriaNombre}
                   </ThemedText>
                 </View>
+
+                {repuesto.requiereLado && (
+                  <View style={styles.sideBadge}>
+                    <ThemedText style={styles.sideBadgeText}>
+                      ⚙️ Elegir Lado (Izq / Der)
+                    </ThemedText>
+                  </View>
+                )}
               </View>
 
               <View style={styles.partInfo}>
@@ -105,7 +113,9 @@ export default function SectionPartsScreen() {
                     ]}
                   >
                     <ThemedText style={styles.detailButtonText}>
-                      Ver Detalles y Comprar →
+                      {repuesto.requiereLado
+                        ? "Seleccionar Lado y Ver Detalles →"
+                        : "Ver Detalles y Comprar →"}
                     </ThemedText>
                   </Pressable>
                 </Link>
@@ -202,6 +212,20 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   tagText: {
+    color: "#ffffff",
+    fontSize: 11,
+    fontWeight: "bold",
+  },
+  sideBadge: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    backgroundColor: "#c00",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  sideBadgeText: {
     color: "#ffffff",
     fontSize: 11,
     fontWeight: "bold",
