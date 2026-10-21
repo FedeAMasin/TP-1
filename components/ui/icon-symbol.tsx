@@ -20,6 +20,12 @@ const MAPPING = {
   'chevron.right': 'chevron-right',
   'book.closed': 'menu-book',
   'phone.fill': 'phone',
+  'star.fill': 'star',
+  'star': 'star-border',
+  'heart.fill': 'favorite',
+  'heart': 'favorite-border',
+  'magnifyingglass': 'search',
+  'xmark.circle.fill': 'cancel',
 } as Partial<IconMapping>;
 
 /**

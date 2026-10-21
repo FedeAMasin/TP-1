@@ -2,7 +2,6 @@ import { Link, Stack, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
-  Image,
   Linking,
   Pressable,
   ScrollView,
@@ -10,9 +9,12 @@ import {
   View,
 } from "react-native";
 
+import { AppImage } from "@/components/AppImage";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { IconSymbol } from "@/components/ui/icon-symbol";
 import { REPUESTOS } from "@/constants/data";
+import { useFavoritos } from "@/hooks/useFavoritos";
 
 const OPCIONES_LADO = [
   { id: "izquierdo", label: "👈 Lado Izquierdo (Conductor)" },
@@ -22,6 +24,7 @@ const OPCIONES_LADO = [
 
 export default function RepuestoDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { isFavorito, toggleFavorito } = useFavoritos();
 
   const repuesto = REPUESTOS.find((r) => r.id === id);
 
@@ -41,6 +44,8 @@ export default function RepuestoDetailScreen() {
       </ThemedView>
     );
   }
+
+  const favoritoActivo = isFavorito(repuesto.id);
 
   const handleContactWhatsApp = () => {
     let mensaje = `Hola Daitona Repuestos, quisiera consultar sobre el producto: ${repuesto.nombre}`;
@@ -87,8 +92,8 @@ export default function RepuestoDetailScreen() {
       />
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.imageCard}>
-          <Image
-            source={{ uri: repuesto.imagen }}
+          <AppImage
+            uri={repuesto.imagen}
             style={styles.image}
             resizeMode="cover"
           />
@@ -97,6 +102,17 @@ export default function RepuestoDetailScreen() {
               {repuesto.categoriaNombre}
             </ThemedText>
           </View>
+
+          <Pressable
+            style={styles.favBtn}
+            onPress={() => toggleFavorito(repuesto.id)}
+          >
+            <IconSymbol
+              size={24}
+              name={favoritoActivo ? "star.fill" : "star"}
+              color={favoritoActivo ? "#FFD700" : "#ffffff"}
+            />
+          </Pressable>
         </View>
 
         <ThemedView style={styles.detailsCard}>
@@ -213,6 +229,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "bold",
   },
+  favBtn: {
+    position: "absolute",
+    top: 12,
+    right: 12,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   detailsCard: {
     backgroundColor: "#ffffff",
     borderRadius: 12,
@@ -289,7 +316,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   contactButton: {
-    backgroundColor: "#25D366", // WhatsApp Green
+    backgroundColor: "#25D366",
     borderRadius: 10,
     paddingVertical: 14,
     alignItems: "center",

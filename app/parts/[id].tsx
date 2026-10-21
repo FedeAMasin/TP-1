@@ -1,19 +1,23 @@
 import { Link, Stack, useLocalSearchParams } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
-  Image,
+  FlatList,
   Pressable,
-  ScrollView,
   StyleSheet,
   View,
 } from "react-native";
 
+import { RepuestoCard } from "@/components/RepuestoCard";
+import { SearchBar } from "@/components/SearchBar";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { normalizeCategory, REPUESTOS, SECCIONES } from "@/constants/data";
+import { useFavoritos } from "@/hooks/useFavoritos";
 
 export default function SectionPartsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const [filterText, setFilterText] = useState<string>("");
+  const { toggleFavorito, isFavorito } = useFavoritos();
 
   const currentCategoryNorm = normalizeCategory(id);
 
@@ -23,11 +27,18 @@ export default function SectionPartsScreen() {
   );
 
   // Filtrar los repuestos pertenecientes a esta sección
-  const repuestosDeSeccion = REPUESTOS.filter((r) => {
+  let repuestosDeSeccion = REPUESTOS.filter((r) => {
     const rCatId = normalizeCategory(r.categoriaId);
     const rCatName = normalizeCategory(r.categoriaNombre);
     return rCatId === currentCategoryNorm || rCatName.includes(currentCategoryNorm) || currentCategoryNorm.includes(rCatId);
   });
+
+  if (filterText.trim()) {
+    repuestosDeSeccion = repuestosDeSeccion.filter((r) =>
+      r.nombre.toLowerCase().includes(filterText.toLowerCase()) ||
+      r.descripcion.toLowerCase().includes(filterText.toLowerCase())
+    );
+  }
 
   const tituloSeccion = seccion ? seccion.titulo : (id ? id.charAt(0).toUpperCase() + id.slice(1) : "Sección");
 
@@ -40,120 +51,83 @@ export default function SectionPartsScreen() {
           headerTintColor: "#c00",
         }}
       />
-      <ScrollView contentContainerStyle={styles.container}>
-        {/* Banner de la Sección */}
-        <ThemedView style={styles.bannerCard}>
-          <ThemedText type="title" style={styles.title}>
-            {tituloSeccion}
-          </ThemedText>
-          {seccion?.descripcion && (
-            <ThemedText style={styles.sectionDesc}>
-              {seccion.descripcion}
-            </ThemedText>
-          )}
-          <View style={styles.countBadge}>
-            <ThemedText style={styles.countText}>
-              {repuestosDeSeccion.length}{" "}
-              {repuestosDeSeccion.length === 1 ? "tarjeta de repuesto" : "tarjetas de repuestos"}
-            </ThemedText>
-          </View>
-        </ThemedView>
-
-        {/* Tarjetas de Repuestos */}
-        {repuestosDeSeccion.length > 0 ? (
-          repuestosDeSeccion.map((repuesto) => (
-            <ThemedView key={repuesto.id} style={styles.partCard}>
-              <View style={styles.partImageContainer}>
-                <Image
-                  source={{ uri: repuesto.imagen }}
-                  style={styles.partImage}
-                  resizeMode="cover"
-                />
-                <View style={styles.tagBadge}>
-                  <ThemedText style={styles.tagText}>
-                    {repuesto.categoriaNombre}
+      <View style={styles.container}>
+        {/* Banner de la Sección Header Component */}
+        <FlatList
+          data={repuestosDeSeccion}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.listContent}
+          ListHeaderComponent={
+            <View>
+              <ThemedView style={styles.bannerCard}>
+                <ThemedText type="title" style={styles.title}>
+                  {tituloSeccion}
+                </ThemedText>
+                {seccion?.descripcion && (
+                  <ThemedText style={styles.sectionDesc}>
+                    {seccion.descripcion}
                   </ThemedText>
-                </View>
-
-                {repuesto.requiereLado && (
-                  <View style={styles.sideBadge}>
-                    <ThemedText style={styles.sideBadgeText}>
-                      ⚙️ Elegir Lado (Izq / Der)
-                    </ThemedText>
-                  </View>
                 )}
-              </View>
-
-              <View style={styles.partInfo}>
-                <ThemedText type="subtitle" style={styles.partTitle}>
-                  {repuesto.nombre}
-                </ThemedText>
-
-                <View style={styles.priceRow}>
-                  <ThemedText style={styles.partPrice}>
-                    $ {repuesto.precio.toLocaleString("es-AR")}
+                <View style={styles.countBadge}>
+                  <ThemedText style={styles.countText}>
+                    {repuestosDeSeccion.length}{" "}
+                    {repuestosDeSeccion.length === 1 ? "repuesto disponible" : "repuestos disponibles"}
                   </ThemedText>
                 </View>
+              </ThemedView>
 
-                <ThemedText style={styles.partDesc} numberOfLines={3}>
-                  {repuesto.descripcion}
-                </ThemedText>
-
-                <Link
-                  href={{
-                    pathname: "/repuesto/[id]",
-                    params: { id: repuesto.id },
-                  }}
-                  asChild
-                >
-                  <Pressable
-                    style={({ pressed }) => [
-                      styles.detailButton,
-                      pressed && styles.buttonPressed,
-                    ]}
-                  >
-                    <ThemedText style={styles.detailButtonText}>
-                      {repuesto.requiereLado
-                        ? "Seleccionar Lado y Ver Detalles →"
-                        : "Ver Detalles y Comprar →"}
-                    </ThemedText>
-                  </Pressable>
-                </Link>
-              </View>
+              <SearchBar
+                value={filterText}
+                onChangeText={setFilterText}
+                placeholder={`Filtrar repuestos en ${tituloSeccion}...`}
+                onClear={() => setFilterText("")}
+              />
+            </View>
+          }
+          renderItem={({ item }) => (
+            <RepuestoCard
+              repuesto={item}
+              isFavorito={isFavorito(item.id)}
+              onToggleFavorito={toggleFavorito}
+            />
+          )}
+          ListEmptyComponent={
+            <ThemedView style={styles.emptyContainer}>
+              <ThemedText type="subtitle">
+                No hay repuestos que coincidan con la búsqueda.
+              </ThemedText>
+              <ThemedText style={styles.emptySubtext}>
+                Intenta limpiar el filtro o explorar otras secciones.
+              </ThemedText>
+              <Link href="/(tabs)/catalogo" asChild>
+                <Pressable style={styles.backButton}>
+                  <ThemedText style={styles.backButtonText}>
+                    Volver al Catálogo
+                  </ThemedText>
+                </Pressable>
+              </Link>
             </ThemedView>
-          ))
-        ) : (
-          <ThemedView style={styles.emptyContainer}>
-            <ThemedText type="subtitle">
-              No hay tarjetas de repuestos disponibles en esta categoría.
-            </ThemedText>
-            <ThemedText style={styles.emptySubtext}>
-              Próximamente agregaremos más productos.
-            </ThemedText>
-            <Link href="/(tabs)/catalogo" asChild>
-              <Pressable style={styles.backButton}>
-                <ThemedText style={styles.backButtonText}>
-                  Volver al Catálogo
-                </ThemedText>
-              </Pressable>
-            </Link>
-          </ThemedView>
-        )}
-      </ScrollView>
+          }
+        />
+      </View>
     </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 16,
+    paddingBottom: 0,
+  },
+  listContent: {
     paddingBottom: 32,
   },
   bannerCard: {
     backgroundColor: "#1a1a1a",
     borderRadius: 12,
     padding: 18,
-    marginBottom: 20,
+    marginBottom: 16,
   },
   title: {
     color: "#ffffff",
@@ -180,94 +154,6 @@ const styles = StyleSheet.create({
     color: "#ff8888",
     fontSize: 13,
     fontWeight: "600",
-  },
-  partCard: {
-    backgroundColor: "#ffffff",
-    borderRadius: 14,
-    overflow: "hidden",
-    marginBottom: 18,
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    borderWidth: 1,
-    borderColor: "#f0f0f0",
-  },
-  partImageContainer: {
-    backgroundColor: "#f9f9f9",
-    position: "relative",
-  },
-  partImage: {
-    width: "100%",
-    height: 190,
-  },
-  tagBadge: {
-    position: "absolute",
-    top: 10,
-    left: 10,
-    backgroundColor: "#1a1a1a",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  tagText: {
-    color: "#ffffff",
-    fontSize: 11,
-    fontWeight: "bold",
-  },
-  sideBadge: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    backgroundColor: "#c00",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  sideBadgeText: {
-    color: "#ffffff",
-    fontSize: 11,
-    fontWeight: "bold",
-  },
-  partInfo: {
-    padding: 16,
-  },
-  partTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#111111",
-    marginBottom: 6,
-  },
-  priceRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  partPrice: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#c00",
-  },
-  partDesc: {
-    fontSize: 14,
-    color: "#555555",
-    lineHeight: 20,
-    marginBottom: 14,
-  },
-  detailButton: {
-    backgroundColor: "#c00",
-    borderRadius: 8,
-    paddingVertical: 12,
-    alignItems: "center",
-  },
-  buttonPressed: {
-    opacity: 0.85,
-  },
-  detailButtonText: {
-    color: "#ffffff",
-    fontWeight: "bold",
-    fontSize: 14,
   },
   emptyContainer: {
     padding: 24,

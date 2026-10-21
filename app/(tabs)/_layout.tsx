@@ -20,7 +20,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: "Inicio",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="house.fill" color={color} />
           ),
@@ -29,9 +29,22 @@ export default function TabLayout() {
       <Tabs.Screen
         name="catalogo"
         options={{
-          title: "Catalogo",
+          title: "Catálogo",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="book.closed" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="favoritos"
+        options={{
+          title: "Favoritos",
+          tabBarIcon: ({ focused }) => (
+            <IconSymbol
+              size={28}
+              name="star.fill"
+              color={focused ? "#FFD700" : "#888888"}
+            />
           ),
         }}
       />

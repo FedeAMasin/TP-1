@@ -1,13 +1,13 @@
 import { Link } from "expo-router";
 import React from "react";
 import {
-  Image,
   Pressable,
   ScrollView,
   StyleSheet,
   View,
 } from "react-native";
 
+import { AppImage } from "@/components/AppImage";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { SECCIONES } from "@/constants/data";
@@ -36,7 +36,7 @@ export default function HomeScreen() {
             asChild
           >
             <Pressable style={({ pressed }) => [styles.gridItem, pressed && styles.pressed]}>
-              <Image source={{ uri: seccion.imagen }} style={styles.gridImage} />
+              <AppImage uri={seccion.imagen} style={styles.gridImage} resizeMode="cover" />
               <View style={styles.gridOverlay}>
                 <ThemedText style={styles.gridTitle}>{seccion.titulo}</ThemedText>
               </View>
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   gridImage: {
     width: "100%",
     height: "100%",
-    opacity: 0.75,
+    opacity: 0.85,
   },
   gridOverlay: {
     position: "absolute",
@@ -122,12 +122,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: 8,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0,0,0,0.6)",
   },
   gridTitle: {
     color: "#ffffff",
     fontWeight: "bold",
-    fontSize: 14,
+    fontSize: 13,
   },
   infoCard: {
     backgroundColor: "#ffffff",
