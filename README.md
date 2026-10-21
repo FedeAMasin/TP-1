@@ -1,50 +1,29 @@
-# Welcome to your Expo app 👋
+# Tienda de repuestos Daitona
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-## Get started
+## Nuestro Objetivo
+Nuestra aplicacion lo que busca es acercar al cliente al negocio, teniendo al alcance de la mano nuestro catalogo y una via de contacto rapida con nuestra tienda. Actualmente desarollamos esta aplicacion para poder tener un canal de consulta rapida sobre precios y repuestos.
 
-1. Install dependencies
+## Integrantes
+* Masin Federico
+* Angel Ceballos
+* Leandro Saiz Zoni
 
-   ```bash
-   npm install
-   ```
+## Features
 
-2. Start the app
+1. Consultar catalogo de repuestos por marca.
+2. Filtrar repuestos por modelo
+3. Mostrar detalles del repuesto
+4. Buscar un repuesto.
+## Avances de la features
+### Consultar catalogo de repuestos por marca
+*Pendiente a Desarrollar*
 
-   ```bash
-   npx expo start
-   ```
+### Filtrar repuestos por modelo
+*Pendiente a Desarrollar*
 
-In the output, you'll find options to open the app in a
+### Mostrar detalles del repuesto
+*Pendiente a Desarrollar*
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Buscar un repuesto
+*Pendiente a Desarrollar*
