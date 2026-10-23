@@ -1,273 +1,512 @@
-import { Link, Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import React from "react";
 import {
   Image,
-  Pressable,
   ScrollView,
   StyleSheet,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { normalizeCategory, REPUESTOS, SECCIONES } from "@/constants/data";
+import { TopHeader } from "@/components/TopHeader";
+
+interface Repuesto {
+  id: string;
+  nombre: string;
+  marcaRepuesto: string;
+  marcaAuto: string;
+  aplicacion: string;
+  precio: number;
+  descripcion: string;
+  imagen: any;
+}
+
+const REPUESTOS_POR_SECCION: Record<string, Repuesto[]> = {
+  motor: [
+    {
+      id: "kit-distribucion",
+      nombre: "Kit de Distribución Completo (Correa + Tensor)",
+      marcaRepuesto: "Gates / SKF",
+      marcaAuto: "Volkswagen",
+      aplicacion: "Gol Trend / Voyage / Fox / Suran 1.6 8v",
+      precio: 85000,
+      descripcion:
+        "Kit de distribución de alta durabilidad para motores VW 1.6 8v (EA111). Incluye correa dentada y rodillo tensor.",
+      imagen: require("@/assets/images/Catalogo/repuestos_motor/kit_distribucion.jpg"),
+    },
+    {
+      id: "pistones",
+      nombre: "Juego de Pistones con Aros (Std / 0.50)",
+      marcaRepuesto: "Mahle / Metal Leve",
+      marcaAuto: "Chevrolet",
+      aplicacion: "Corsa / Onix / Prisma / Classic 1.4 8v",
+      precio: 120000,
+      descripcion:
+        "Juego completo de 4 pistones de aluminio con sus respectivos aros de compresión y pernos de pistón.",
+      imagen: require("@/assets/images/Catalogo/repuestos_motor/pistones.jpg"),
+    },
+    {
+      id: "junta-tapa",
+      nombre: "Junta de Tapa de Cilindros Multilámina",
+      marcaRepuesto: "Taranto",
+      marcaAuto: "Ford",
+      aplicacion: "Ka / Fiesta / Ecosport / Focus 1.6 Sigma / Zetec",
+      precio: 38000,
+      descripcion:
+        "Junta de tapa de cilindros metálica multilámina (MLS) de alta resistencia térmica para motores Ford 1.6.",
+      imagen: require("@/assets/images/Catalogo/repuestos_motor/junta_tapa.jpg"),
+    },
+    {
+      id: "bujias",
+      nombre: "Juego de Bujías de Encendido (x4)",
+      marcaRepuesto: "NGK / Bosch",
+      marcaAuto: "Renault",
+      aplicacion: "Kangoo / Clio / Logan / Sandero 1.6 16v K4M",
+      precio: 28000,
+      descripcion:
+        "Set de 4 bujías de encendido de cobre/iridio para encendido óptimo y menor consumo de combustible.",
+      imagen: require("@/assets/images/Catalogo/repuestos_motor/bujias.jpg"),
+    },
+    {
+      id: "bomba-aceite",
+      nombre: "Bomba de Aceite de Motor",
+      marcaRepuesto: "Fallone / Schadek",
+      marcaAuto: "Fiat",
+      aplicacion: "Palio / Siena / Uno / Strada / Fiorino 1.4 Fire",
+      precio: 65000,
+      descripcion:
+        "Bomba de aceite de engranajes de alto flujo para lubricación constante en motores Fiat Fire 1.3 / 1.4.",
+      imagen: require("@/assets/images/Catalogo/repuestos_motor/bomba_aceite.jpg"),
+    },
+    {
+      id: "valvulas",
+      nombre: "Juego de Válvulas Admisión y Escape",
+      marcaRepuesto: "3B / Basso",
+      marcaAuto: "Toyota",
+      aplicacion: "Hilux 2.5 / 3.0 D-4D Turbo Diesel (1KD / 2KD)",
+      precio: 145000,
+      descripcion:
+        "Juego completo de válvulas de admisión y escape nitradas para motores turbodiésel Toyota.",
+      imagen: require("@/assets/images/Catalogo/repuestos_motor/valvulas.jpg"),
+    },
+    {
+      id: "bomba-agua",
+      nombre: "Bomba de Agua con Junta",
+      marcaRepuesto: "Dolz / VMN",
+      marcaAuto: "Peugeot / Citroën",
+      aplicacion: "208 / Partner / Berlingo / C3 1.6 16v EC5",
+      precio: 52000,
+      descripcion:
+        "Bomba de agua de refrigerante con polea y junta de sellado para sistema de refrigeración.",
+      imagen: require("@/assets/images/Catalogo/repuestos_motor/bomba_agua.jpg"),
+    },
+    {
+      id: "metales-biela",
+      nombre: "Cojinetes / Metales de Biela y Bancada",
+      marcaRepuesto: "Glyco / Federal Mogul",
+      marcaAuto: "Volkswagen",
+      aplicacion: "Amarok 2.0 TDI / Vento 2.0 TSI",
+      precio: 78000,
+      descripcion:
+        "Juego de cojinetes de biela y bancada de trimetal anti-fricción para motores diésel y nafta 2.0.",
+      imagen: require("@/assets/images/Catalogo/repuestos_motor/metales_biela.jpg"),
+    },
+  ],
+  suspension: [
+    {
+      id: "amortiguadores",
+      nombre: "Juego de Amortiguadores Delanteros a Gas",
+      marcaRepuesto: "Fric-Rot / Monroe",
+      marcaAuto: "Volkswagen",
+      aplicacion: "Gol Trend / Voyage / Fox / Suran 1.6",
+      precio: 115000,
+      descripcion:
+        "Par de amortiguadores delanteros hidráulicos presurizados con nitrógeno para máxima estabilidad.",
+      imagen: require("@/assets/images/Catalogo/repuestos_suspension/amortiguadores.jpg"),
+    },
+    {
+      id: "espirales",
+      nombre: "Juego de Espirales de Suspensión Reforzados",
+      marcaRepuesto: "AG Espirales",
+      marcaAuto: "Chevrolet",
+      aplicacion: "Corsa / Classic / Onix / Prisma",
+      precio: 62000,
+      descripcion:
+        "Espirales progresivos de alta resistencia para el tren delantero, mantienen la altura y el confort original.",
+      imagen: require("@/assets/images/Catalogo/repuestos_suspension/espirales.jpg"),
+    },
+    {
+      id: "cazoletas",
+      nombre: "Cazoleta de Amortiguador con Crapodina",
+      marcaRepuesto: "Viamonte / VTH",
+      marcaAuto: "Ford",
+      aplicacion: "Fiesta Kinétic / Ecosport Kinétic / Ka 1.5",
+      precio: 35000,
+      descripcion:
+        "Cazoleta de suspensión superior con rodamiento crapodina de giro suave para dirección.",
+      imagen: require("@/assets/images/Catalogo/repuestos_suspension/cazoletas.jpg"),
+    },
+    {
+      id: "bieletas",
+      nombre: "Bieletas de Barra Estabilizadora (x2)",
+      marcaRepuesto: "Capemi",
+      marcaAuto: "Renault",
+      aplicacion: "Kangoo / Sandero / Logan / Duster",
+      precio: 24000,
+      descripcion:
+        "Par de bieletas reforzadas con bujes de caucho de alta densidad para evitar ruidos e inclinación.",
+      imagen: require("@/assets/images/Catalogo/repuestos_suspension/bieletas.jpg"),
+    },
+    {
+      id: "parrilla-suspension",
+      nombre: "Parrilla de Suspensión con Bujes y Rótula",
+      marcaRepuesto: "Nakata",
+      marcaAuto: "Fiat",
+      aplicacion: "Palio / Siena / Uno Novo / Strada",
+      precio: 58000,
+      descripcion:
+        "Brazo de suspensión inferior completo listo para colocar, fabricado en chapa estampada reforzada.",
+      imagen: require("@/assets/images/Catalogo/repuestos_suspension/parrilla_suspension.jpg"),
+    },
+    {
+      id: "extremos-direccion",
+      nombre: "Juego de Extremos de Dirección y Axial",
+      marcaRepuesto: "Cofap",
+      marcaAuto: "Toyota",
+      aplicacion: "Hilux 4x2 / 4x4 (2005 - 2022)",
+      precio: 48000,
+      descripcion:
+        "Extremos de dirección articulados para barra de mando con rosca tratada térmicamente.",
+      imagen: require("@/assets/images/Catalogo/repuestos_suspension/extremos_direccion.jpg"),
+    },
+  ],
+  frenos: [
+    {
+      id: "pastillas-freno",
+      nombre: "Juego de Pastillas de Freno Delanteras",
+      marcaRepuesto: "Fras-le / LPR",
+      marcaAuto: "Volkswagen",
+      aplicacion: "Amarok 2.0 / Vento / Golf VII",
+      precio: 45000,
+      descripcion:
+        "Pastillas de freno orgánicas/semimetálicas de frenado silencioso y baja emisión de polvo de carbón.",
+      imagen: require("@/assets/images/Catalogo/repuestos_frenos/pastillas_freno.jpg"),
+    },
+    {
+      id: "discos-freno",
+      nombre: "Juego de Discos de Freno Ventilados (x2)",
+      marcaRepuesto: "Fremax / Corven",
+      marcaAuto: "Chevrolet",
+      aplicacion: "Onix / Prisma / Spin / Cobalt 1.4",
+      precio: 82000,
+      descripcion:
+        "Par de discos de freno delanteros ventilados con aleación de alto carbono para disipación de calor.",
+      imagen: require("@/assets/images/Catalogo/repuestos_frenos/discos_freno.jpg"),
+    },
+    {
+      id: "campanas-freno",
+      nombre: "Campanas y Juego de Cintas de Freno Traseras",
+      marcaRepuesto: "Bosch",
+      marcaAuto: "Ford",
+      aplicacion: "Ka 1.0 - 1.5 / Fiesta Max / Ecosport",
+      precio: 68000,
+      descripcion:
+        "Set completo de campanas de freno traseras y patines de freno rectificados para eje trasero.",
+      imagen: require("@/assets/images/Catalogo/repuestos_frenos/campanas_freno.jpg"),
+    },
+    {
+      id: "bomba-freno",
+      nombre: "Bomba de Freno Doble Circuito",
+      marcaRepuesto: "Controil / Varga",
+      marcaAuto: "Fiat",
+      aplicacion: "Uno Fire / Palio / Siena 1.3 - 1.4",
+      precio: 54000,
+      descripcion:
+        "Cilindro maestro de freno principal de doble circuito con depósito de líquido de freno.",
+      imagen: require("@/assets/images/Catalogo/repuestos_frenos/bomba_freno.jpg"),
+    },
+    {
+      id: "flexible-freno",
+      nombre: "Flexibles de Freno Delanteros (x2)",
+      marcaRepuesto: "Ate",
+      marcaAuto: "Renault",
+      aplicacion: "Clio 2 / Logan / Sandero / Kangoo",
+      precio: 22000,
+      descripcion:
+        "Mangueras flexibles reinforced con malla textil para presión de fluido hidráulico de freno.",
+      imagen: require("@/assets/images/Catalogo/repuestos_frenos/flexible_freno.jpg"),
+    },
+    {
+      id: "cables-freno-mano",
+      nombre: "Cable de Freno de Mano Trasero",
+      marcaRepuesto: "Efac",
+      marcaAuto: "Peugeot",
+      aplicacion: "208 / 207 Compact / Partner 1.6",
+      precio: 26000,
+      descripcion:
+        "Cable de acero galvanizado con funda protectora de PVC para accionamiento del freno de estacionamiento.",
+      imagen: require("@/assets/images/Catalogo/repuestos_frenos/cables_freno_mano.jpg"),
+    },
+  ],
+  carroceria: [
+    {
+      id: "opticas-delanteras",
+      nombre: "Óptica Delantera Principal Fondo Negro",
+      marcaRepuesto: "FITAM / TYC",
+      marcaAuto: "Volkswagen",
+      aplicacion: "Gol Trend G5 / G6 / Voyage",
+      precio: 92000,
+      descripcion:
+        "Faro principal con acrílico de alta transparencia, parábola reflectora y máscara deportiva negra.",
+      imagen: require("@/assets/images/Catalogo/repuestos_carroceria/opticas_delanteras.jpg"),
+    },
+    {
+      id: "paragolpes-delantero",
+      nombre: "Paragolpes Delantero Primereado",
+      marcaRepuesto: "Retov",
+      marcaAuto: "Chevrolet",
+      aplicacion: "Corsa Classic / Corsa 2 (2000 - 2016)",
+      precio: 75000,
+      descripcion:
+        "Paragolpes de plástico inyectado primereado listo para pintar del color del vehículo.",
+      imagen: require("@/assets/images/Catalogo/repuestos_carroceria/paragolpes_delantero.jpg"),
+    },
+    {
+      id: "espejo-retrovisor",
+      nombre: "Espejo Retrovisor Exterior Eléctrico",
+      marcaRepuesto: "Metagal",
+      marcaAuto: "Ford",
+      aplicacion: "Fiesta Kinétic / Ka (2015 - 2021)",
+      precio: 48000,
+      descripcion:
+        "Espejo lateral con comando eléctrico, espejo convexo anti-encandilamiento y luz de giro integrada.",
+      imagen: require("@/assets/images/Catalogo/repuestos_carroceria/espejo_retrovisor.jpg"),
+    },
+    {
+      id: "faros-traseros",
+      nombre: "Faro Trasero Bicolor / Fumée",
+      marcaRepuesto: "Baiml",
+      marcaAuto: "Fiat",
+      aplicacion: "Palio Fire / Uno Fire / Siena",
+      precio: 36000,
+      descripcion:
+        "Faro de posición, freno y giros trasero con portalámparas e instalación eléctrica integrada.",
+      imagen: require("@/assets/images/Catalogo/repuestos_carroceria/faros_traseros.jpg"),
+    },
+    {
+      id: "parrilla-frente",
+      nombre: "Parrilla de Frente Cromada con Moldura",
+      marcaRepuesto: "Nakata",
+      marcaAuto: "Renault",
+      aplicacion: "Sandero Stepway / Logan (2014 - 2020)",
+      precio: 42000,
+      descripcion:
+        "Parrilla frontal superior calandra con encastre perfecto y bordes cromados brillantes.",
+      imagen: require("@/assets/images/Catalogo/repuestos_carroceria/parrilla_frente.jpg"),
+    },
+    {
+      id: "faros-auxiliares",
+      nombre: "Kit de Faros Auxiliares Antiniebla con Tecla",
+      marcaRepuesto: "Cibie / Vic",
+      marcaAuto: "Toyota",
+      aplicacion: "Hilux SR / SRV / SW4 (2016 - 2023)",
+      precio: 65000,
+      descripcion:
+        "Juego de faros antiniebla de profundidad con lámparas H11, cableado, relé y tecla de comando interior.",
+      imagen: require("@/assets/images/Catalogo/repuestos_carroceria/faros_auxiliares.jpg"),
+    },
+  ],
+};
+
+const SECTION_NAMES: Record<string, string> = {
+  motor: "Motor",
+  suspension: "Suspensión",
+  frenos: "Frenos",
+  carroceria: "Carrocería",
+};
 
 export default function SectionPartsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  const currentCategoryNorm = normalizeCategory(id);
+  const currentId = id?.toLowerCase() || "";
+  const sectionName =
+    SECTION_NAMES[currentId] ||
+    (id ? id.charAt(0).toUpperCase() + id.slice(1) : "Desconocida");
 
-  // Buscar la sección correspondiente
-  const seccion = SECCIONES.find(
-    (s) => normalizeCategory(s.id) === currentCategoryNorm || normalizeCategory(s.titulo) === currentCategoryNorm
-  );
-
-  // Filtrar los repuestos pertenecientes a esta sección
-  const repuestosDeSeccion = REPUESTOS.filter((r) => {
-    const rCatId = normalizeCategory(r.categoriaId);
-    const rCatName = normalizeCategory(r.categoriaNombre);
-    return rCatId === currentCategoryNorm || rCatName.includes(currentCategoryNorm) || currentCategoryNorm.includes(rCatId);
-  });
-
-  const tituloSeccion = seccion ? seccion.titulo : (id ? id.charAt(0).toUpperCase() + id.slice(1) : "Sección");
+  const repuestos = REPUESTOS_POR_SECCION[currentId] || [];
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          title: `Repuestos: ${tituloSeccion}`,
-          headerBackTitle: "Catálogo",
-          headerTintColor: "#c00",
-        }}
-      />
-      <ScrollView contentContainerStyle={styles.container}>
-        {/* Banner de la Sección */}
-        <ThemedView style={styles.bannerCard}>
-          <ThemedText type="title" style={styles.title}>
-            {tituloSeccion}
+      <Stack.Screen options={{ headerShown: false }} />
+      <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
+        {/* Sticky Header with Back Button + Hamburger + Daytona Logo */}
+        <TopHeader showBackButton={true} />
+
+        <ScrollView contentContainerStyle={styles.container}>
+          <ThemedText type="subtitle" style={styles.sectionHeaderTitle}>
+            Sección: {sectionName}
           </ThemedText>
-          {seccion?.descripcion && (
-            <ThemedText style={styles.sectionDesc}>
-              {seccion.descripcion}
-            </ThemedText>
-          )}
-          <View style={styles.countBadge}>
-            <ThemedText style={styles.countText}>
-              {repuestosDeSeccion.length}{" "}
-              {repuestosDeSeccion.length === 1 ? "tarjeta de repuesto" : "tarjetas de repuestos"}
-            </ThemedText>
-          </View>
-        </ThemedView>
 
-        {/* Tarjetas de Repuestos */}
-        {repuestosDeSeccion.length > 0 ? (
-          repuestosDeSeccion.map((repuesto) => (
-            <ThemedView key={repuesto.id} style={styles.partCard}>
-              <View style={styles.partImageContainer}>
-                <Image
-                  source={{ uri: repuesto.imagen }}
-                  style={styles.partImage}
-                  resizeMode="cover"
-                />
-                <View style={styles.tagBadge}>
-                  <ThemedText style={styles.tagText}>
-                    {repuesto.categoriaNombre}
-                  </ThemedText>
-                </View>
-
-                {repuesto.requiereLado && (
-                  <View style={styles.sideBadge}>
-                    <ThemedText style={styles.sideBadgeText}>
-                      ⚙️ Elegir Lado (Izq / Der)
-                    </ThemedText>
+          {repuestos.length > 0 ? (
+            <View style={styles.grid}>
+              {repuestos.map((item) => (
+                <ThemedView key={item.id} style={styles.card}>
+                  <View style={styles.imageContainer}>
+                    <Image
+                      source={item.imagen}
+                      style={styles.cardImage}
+                      resizeMode="cover"
+                    />
+                    <View style={styles.brandBadge}>
+                      <ThemedText style={styles.brandBadgeText}>
+                        {item.marcaAuto}
+                      </ThemedText>
+                    </View>
                   </View>
-                )}
-              </View>
 
-              <View style={styles.partInfo}>
-                <ThemedText type="subtitle" style={styles.partTitle}>
-                  {repuesto.nombre}
-                </ThemedText>
-
-                <View style={styles.priceRow}>
-                  <ThemedText style={styles.partPrice}>
-                    $ {repuesto.precio.toLocaleString("es-AR")}
-                  </ThemedText>
-                </View>
-
-                <ThemedText style={styles.partDesc} numberOfLines={3}>
-                  {repuesto.descripcion}
-                </ThemedText>
-
-                <Link
-                  href={{
-                    pathname: "/repuesto/[id]",
-                    params: { id: repuesto.id },
-                  }}
-                  asChild
-                >
-                  <Pressable
-                    style={({ pressed }) => [
-                      styles.detailButton,
-                      pressed && styles.buttonPressed,
-                    ]}
-                  >
-                    <ThemedText style={styles.detailButtonText}>
-                      {repuesto.requiereLado
-                        ? "Seleccionar Lado y Ver Detalles →"
-                        : "Ver Detalles y Comprar →"}
+                  <View style={styles.cardBody}>
+                    <ThemedText style={styles.partTitle}>
+                      {item.nombre}
                     </ThemedText>
-                  </Pressable>
-                </Link>
-              </View>
+
+                    <View style={styles.metaRow}>
+                      <ThemedText style={styles.makerText}>
+                        Marca: <ThemedText style={styles.bold}>{item.marcaRepuesto}</ThemedText>
+                      </ThemedText>
+                    </View>
+
+                    <ThemedText style={styles.appText}>
+                      🚗 <ThemedText style={styles.appBold}>{item.aplicacion}</ThemedText>
+                    </ThemedText>
+
+                    <ThemedText style={styles.descText} numberOfLines={3}>
+                      {item.descripcion}
+                    </ThemedText>
+
+                    <View style={styles.priceRow}>
+                      <ThemedText style={styles.priceText}>
+                        $ {item.precio.toLocaleString("es-AR")}
+                      </ThemedText>
+                    </View>
+                  </View>
+                </ThemedView>
+              ))}
+            </View>
+          ) : (
+            <ThemedView style={styles.emptyContainer}>
+              <ThemedText type="subtitle">
+                Sección: {sectionName}
+              </ThemedText>
+              <ThemedText style={styles.emptySubtext}>
+                Próximamente agregaremos más repuestos para esta categoría.
+              </ThemedText>
             </ThemedView>
-          ))
-        ) : (
-          <ThemedView style={styles.emptyContainer}>
-            <ThemedText type="subtitle">
-              No hay tarjetas de repuestos disponibles en esta categoría.
-            </ThemedText>
-            <ThemedText style={styles.emptySubtext}>
-              Próximamente agregaremos más productos.
-            </ThemedText>
-            <Link href="/(tabs)/catalogo" asChild>
-              <Pressable style={styles.backButton}>
-                <ThemedText style={styles.backButtonText}>
-                  Volver al Catálogo
-                </ThemedText>
-              </Pressable>
-            </Link>
-          </ThemedView>
-        )}
-      </ScrollView>
+          )}
+        </ScrollView>
+      </SafeAreaView>
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#f7f7f9",
+  },
+  sectionHeaderTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#111111",
+    marginBottom: 14,
+  },
   container: {
     padding: 16,
     paddingBottom: 32,
   },
-  bannerCard: {
-    backgroundColor: "#1a1a1a",
-    borderRadius: 12,
-    padding: 18,
-    marginBottom: 20,
+  grid: {
+    gap: 16,
   },
-  title: {
-    color: "#ffffff",
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 6,
-  },
-  sectionDesc: {
-    color: "#cccccc",
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 12,
-  },
-  countBadge: {
-    backgroundColor: "rgba(204, 0, 0, 0.25)",
-    borderColor: "#c00",
-    borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 20,
-    alignSelf: "flex-start",
-  },
-  countText: {
-    color: "#ff8888",
-    fontSize: 13,
-    fontWeight: "600",
-  },
-  partCard: {
+  card: {
     backgroundColor: "#ffffff",
     borderRadius: 14,
     overflow: "hidden",
-    marginBottom: 18,
     elevation: 3,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
     borderWidth: 1,
-    borderColor: "#f0f0f0",
+    borderColor: "#e8e8e8",
   },
-  partImageContainer: {
-    backgroundColor: "#f9f9f9",
+  imageContainer: {
     position: "relative",
+    backgroundColor: "#f0f0f0",
   },
-  partImage: {
+  cardImage: {
     width: "100%",
-    height: 190,
+    height: 170,
   },
-  tagBadge: {
-    position: "absolute",
-    top: 10,
-    left: 10,
-    backgroundColor: "#1a1a1a",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  tagText: {
-    color: "#ffffff",
-    fontSize: 11,
-    fontWeight: "bold",
-  },
-  sideBadge: {
+  brandBadge: {
     position: "absolute",
     top: 10,
     right: 10,
-    backgroundColor: "#c00",
+    backgroundColor: "#d32f2f",
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 6,
   },
-  sideBadgeText: {
+  brandBadgeText: {
     color: "#ffffff",
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: "bold",
   },
-  partInfo: {
-    padding: 16,
+  cardBody: {
+    padding: 14,
   },
   partTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: "bold",
     color: "#111111",
     marginBottom: 6,
   },
-  priceRow: {
-    flexDirection: "row",
-    alignItems: "center",
+  metaRow: {
+    marginBottom: 4,
+  },
+  makerText: {
+    fontSize: 13,
+    color: "#666666",
+  },
+  bold: {
+    fontWeight: "bold",
+    color: "#222222",
+  },
+  appText: {
+    fontSize: 13,
+    color: "#444444",
     marginBottom: 8,
   },
-  partPrice: {
-    fontSize: 22,
+  appBold: {
+    fontWeight: "600",
+    color: "#111111",
+  },
+  descText: {
+    fontSize: 13,
+    color: "#666666",
+    lineHeight: 18,
+    marginBottom: 12,
+  },
+  priceRow: {
+    borderTopWidth: 1,
+    borderTopColor: "#eeeeee",
+    paddingTop: 10,
+    alignItems: "flex-end",
+  },
+  priceText: {
+    fontSize: 20,
     fontWeight: "bold",
-    color: "#c00",
-  },
-  partDesc: {
-    fontSize: 14,
-    color: "#555555",
-    lineHeight: 20,
-    marginBottom: 14,
-  },
-  detailButton: {
-    backgroundColor: "#c00",
-    borderRadius: 8,
-    paddingVertical: 12,
-    alignItems: "center",
-  },
-  buttonPressed: {
-    opacity: 0.85,
-  },
-  detailButtonText: {
-    color: "#ffffff",
-    fontWeight: "bold",
-    fontSize: 14,
+    color: "#d32f2f",
   },
   emptyContainer: {
     padding: 24,
@@ -277,18 +516,7 @@ const styles = StyleSheet.create({
   },
   emptySubtext: {
     marginTop: 8,
-    marginBottom: 16,
     textAlign: "center",
-    color: "#666",
-  },
-  backButton: {
-    backgroundColor: "#1a1a1a",
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 8,
-  },
-  backButtonText: {
-    color: "#fff",
-    fontWeight: "600",
+    color: "#666666",
   },
 });

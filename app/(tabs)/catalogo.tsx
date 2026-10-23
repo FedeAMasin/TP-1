@@ -1,19 +1,17 @@
 import { Link } from "expo-router";
+import React from "react";
 import {
-  Alert,
   Image,
+  Pressable,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { TopHeader } from "@/components/TopHeader";
 
-{
-  /*variable que tiene las partes. por ahora se utiliza asi.*/
-}
 const parts = [
   {
     id: "motor",
@@ -41,36 +39,35 @@ const parts = [
   },
 ];
 
-{
-  /*funcion default que es la que devuelve la pantalla de catalogo. */
-}
-
 export default function CatalogoScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <ThemedText type="title" style={styles.header}>
-          Repuestos <ThemedText style={styles.brand}>Daitona</ThemedText>
-        </ThemedText>
+      {/* Sticky Header Bar with Hamburger Menu & DAYTONA Logo */}
+      <TopHeader />
 
-      {parts.map((p) => (
-        <ThemedView key={p.id} style={styles.card}>
-          <TouchableOpacity onPress={() => Alert.alert(p.title, p.description)}>
-            <Image source={p.image} style={styles.image} />
-          </TouchableOpacity>
-          <ThemedView style={styles.cardContent}>
-            <ThemedText type="subtitle">{p.title}</ThemedText>
-            <ThemedText>{p.description}</ThemedText>
-            <Link
-              href={{ pathname: "/parts/[id]", params: { id: p.id } }}
-              style={styles.link}
+      {/* Scrollable Catalog List */}
+      <ScrollView contentContainerStyle={styles.container}>
+        {parts.map((p) => (
+          <Link
+            key={p.id}
+            href={{ pathname: "/parts/[id]", params: { id: p.id } }}
+            asChild
+          >
+            <Pressable
+              style={({ pressed }) => [
+                styles.card,
+                pressed && styles.cardPressed,
+              ]}
             >
-              <ThemedText type="defaultSemiBold">Ver detalles</ThemedText>
-            </Link>
-          </ThemedView>
-        </ThemedView>
-      ))}
-    </ScrollView>
+              <Image source={p.image} style={styles.image} />
+              <ThemedView style={styles.cardContent}>
+                <ThemedText type="subtitle">{p.title}</ThemedText>
+                <ThemedText>{p.description}</ThemedText>
+              </ThemedView>
+            </Pressable>
+          </Link>
+        ))}
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -78,25 +75,11 @@ export default function CatalogoScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    backgroundColor: "#ffffff",
   },
   container: {
     padding: 16,
     paddingBottom: 32,
-    // justifyContent: "center",
-    //alignItems: "center",
-  },
-  text: {
-    marginTop: 8,
-  },
-  header: {
-    fontSize: 28,
-    marginBottom: 12,
-  },
-  brand: {
-    color: "#c00",
-    fontSize: 28,
-    fontWeight: "bold",
-    lineHeight: 32,
   },
   card: {
     backgroundColor: "#fff",
@@ -104,6 +87,11 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     marginBottom: 12,
     elevation: 2,
+    borderWidth: 1,
+    borderColor: "#f0f0f0",
+  },
+  cardPressed: {
+    opacity: 0.9,
   },
   image: {
     width: "100%",
@@ -111,8 +99,5 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     padding: 12,
-  },
-  link: {
-    marginTop: 8,
   },
 });
