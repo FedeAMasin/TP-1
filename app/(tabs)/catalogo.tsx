@@ -7,12 +7,14 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppImage } from "@/components/AppImage";
 import { RepuestoCard } from "@/components/RepuestoCard";
 import { SearchBar } from "@/components/SearchBar";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { TopHeader } from "@/components/TopHeader";
 import { REPUESTOS, SECCIONES } from "@/constants/data";
 import { useFavoritos } from "@/hooks/useFavoritos";
 
@@ -31,101 +33,110 @@ export default function CatalogoScreen() {
     : [];
 
   return (
-    <View style={styles.container}>
-      <ThemedView style={styles.headerContainer}>
-        <ThemedText type="title" style={styles.header}>
-          Catálogo <ThemedText style={styles.brand}>Daitona</ThemedText>
-        </ThemedText>
-        <ThemedText style={styles.subtitle}>
-          Busca un repuesto o explora por secciones:
-        </ThemedText>
-      </ThemedView>
+    <SafeAreaView style={styles.safeArea} edges={["top"]}>
+      {/* Sticky Header Bar with Hamburger Menu & DAYTONA Logo */}
+      <TopHeader />
 
-      {/* Barra de búsqueda en tiempo real */}
-      <SearchBar
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        placeholder="Buscar repuesto por nombre o categoría..."
-        onClear={() => setSearchQuery("")}
-      />
+      <View style={styles.container}>
+        <ThemedView style={styles.headerContainer}>
+          <ThemedText type="title" style={styles.header}>
+            Catálogo <ThemedText style={styles.brand}>Daitona</ThemedText>
+          </ThemedText>
+          <ThemedText style={styles.subtitle}>
+            Busca un repuesto o explora por secciones:
+          </ThemedText>
+        </ThemedView>
 
-      {/* Modo Búsqueda Activa */}
-      {searchQuery.trim().length > 0 ? (
-        <FlatList
-          data={repuestosFiltrados}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContent}
-          renderItem={({ item }) => (
-            <RepuestoCard
-              repuesto={item}
-              isFavorito={isFavorito(item.id)}
-              onToggleFavorito={toggleFavorito}
-            />
-          )}
-          ListEmptyComponent={
-            <ThemedView style={styles.emptySearch}>
-              <ThemedText type="subtitle">
-                {`No se encontraron repuestos para "${searchQuery}"`}
-              </ThemedText>
-              <ThemedText style={styles.emptySub}>
-                Intenta buscar con otra palabra clave o explora las categorías.
-              </ThemedText>
-            </ThemedView>
-          }
+        {/* Barra de búsqueda en tiempo real */}
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Buscar repuesto por nombre o categoría..."
+          onClear={() => setSearchQuery("")}
         />
-      ) : (
-        /* Modo Lista de Secciones */
-        <ScrollView contentContainerStyle={styles.sectionsContent}>
-          {SECCIONES.map((seccion) => {
-            const cantidad = REPUESTOS.filter(
-              (r) => r.categoriaId === seccion.id
-            ).length;
 
-            return (
-              <ThemedView key={seccion.id} style={styles.card}>
-                <Link
-                  href={{ pathname: "/parts/[id]", params: { id: seccion.id } }}
-                  asChild
-                >
-                  <Pressable style={({ pressed }) => [pressed && styles.pressed]}>
-                    <View style={styles.imageContainer}>
-                      <AppImage
-                        uri={seccion.imagen}
-                        style={styles.image}
-                        resizeMode="cover"
-                      />
-                      <View style={styles.badgeContainer}>
-                        <ThemedText style={styles.badgeText}>
-                          {cantidad} {cantidad === 1 ? "repuesto" : "repuestos"}
-                        </ThemedText>
-                      </View>
-                    </View>
-
-                    <View style={styles.cardContent}>
-                      <ThemedText type="subtitle" style={styles.cardTitle}>
-                        {seccion.titulo}
-                      </ThemedText>
-                      <ThemedText style={styles.cardDescription}>
-                        {seccion.descripcion}
-                      </ThemedText>
-                      <View style={styles.actionRow}>
-                        <ThemedText type="defaultSemiBold" style={styles.linkText}>
-                          Ver repuestos →
-                        </ThemedText>
-                      </View>
-                    </View>
-                  </Pressable>
-                </Link>
+        {/* Modo Búsqueda Activa */}
+        {searchQuery.trim().length > 0 ? (
+          <FlatList
+            data={repuestosFiltrados}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.listContent}
+            renderItem={({ item }) => (
+              <RepuestoCard
+                repuesto={item}
+                isFavorito={isFavorito(item.id)}
+                onToggleFavorito={toggleFavorito}
+              />
+            )}
+            ListEmptyComponent={
+              <ThemedView style={styles.emptySearch}>
+                <ThemedText type="subtitle">
+                  {`No se encontraron repuestos para "${searchQuery}"`}
+                </ThemedText>
+                <ThemedText style={styles.emptySub}>
+                  Intenta buscar con otra palabra clave o explora las categorías.
+                </ThemedText>
               </ThemedView>
-            );
-          })}
-        </ScrollView>
-      )}
-    </View>
+            }
+          />
+        ) : (
+          /* Modo Lista de Secciones */
+          <ScrollView contentContainerStyle={styles.sectionsContent}>
+            {SECCIONES.map((seccion) => {
+              const cantidad = REPUESTOS.filter(
+                (r) => r.categoriaId === seccion.id
+              ).length;
+
+              return (
+                <ThemedView key={seccion.id} style={styles.card}>
+                  <Link
+                    href={{ pathname: "/parts/[id]", params: { id: seccion.id } }}
+                    asChild
+                  >
+                    <Pressable style={({ pressed }) => [pressed && styles.pressed]}>
+                      <View style={styles.imageContainer}>
+                        <AppImage
+                          uri={seccion.imagen}
+                          style={styles.image}
+                          resizeMode="cover"
+                        />
+                        <View style={styles.badgeContainer}>
+                          <ThemedText style={styles.badgeText}>
+                            {cantidad} {cantidad === 1 ? "repuesto" : "repuestos"}
+                          </ThemedText>
+                        </View>
+                      </View>
+
+                      <View style={styles.cardContent}>
+                        <ThemedText type="subtitle" style={styles.cardTitle}>
+                          {seccion.titulo}
+                        </ThemedText>
+                        <ThemedText style={styles.cardDescription}>
+                          {seccion.descripcion}
+                        </ThemedText>
+                        <View style={styles.actionRow}>
+                          <ThemedText type="defaultSemiBold" style={styles.linkText}>
+                            Ver repuestos →
+                          </ThemedText>
+                        </View>
+                      </View>
+                    </Pressable>
+                  </Link>
+                </ThemedView>
+              );
+            })}
+          </ScrollView>
+        )}
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#ffffff",
+  },
   container: {
     flex: 1,
     padding: 16,

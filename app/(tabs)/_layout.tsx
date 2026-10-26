@@ -11,6 +11,7 @@ export default function TabLayout() {
 
   return (
     <Tabs
+      initialRouteName="index"
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
@@ -30,6 +31,7 @@ export default function TabLayout() {
         name="catalogo"
         options={{
           title: "Catálogo",
+          tabBarStyle: { display: "none" },
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="book.closed" color={color} />
           ),
@@ -52,9 +54,16 @@ export default function TabLayout() {
         name="contacto"
         options={{
           title: "Contacto",
+          tabBarStyle: { display: "none" },
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="phone.fill" color={color} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="explore"
+        options={{
+          href: null,
         }}
       />
     </Tabs>
