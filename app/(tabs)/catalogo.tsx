@@ -38,15 +38,6 @@ export default function CatalogoScreen() {
       <TopHeader />
 
       <View style={styles.container}>
-        <ThemedView style={styles.headerContainer}>
-          <ThemedText type="title" style={styles.header}>
-            Catálogo <ThemedText style={styles.brand}>Daitona</ThemedText>
-          </ThemedText>
-          <ThemedText style={styles.subtitle}>
-            Busca un repuesto o explora por secciones:
-          </ThemedText>
-        </ThemedView>
-
         {/* Barra de búsqueda en tiempo real */}
         <SearchBar
           value={searchQuery}
@@ -141,23 +132,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     paddingBottom: 0,
-  },
-  headerContainer: {
-    marginBottom: 12,
-  },
-  header: {
-    fontSize: 28,
-    marginBottom: 2,
-  },
-  brand: {
-    color: "#c00",
-    fontSize: 28,
-    fontWeight: "bold",
-    lineHeight: 32,
-  },
-  subtitle: {
-    fontSize: 14,
-    opacity: 0.8,
   },
   listContent: {
     paddingBottom: 32,

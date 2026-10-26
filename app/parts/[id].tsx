@@ -547,7 +547,7 @@ const styles = StyleSheet.create({
   brandBadge: {
     position: "absolute",
     top: 10,
-    right: 50,
+    left: 10,
     backgroundColor: "#d32f2f",
     paddingHorizontal: 10,
     paddingVertical: 4,

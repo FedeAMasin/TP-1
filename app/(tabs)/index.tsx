@@ -1,159 +1,275 @@
 import { Link } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
+  TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 
-import { AppImage } from "@/components/AppImage";
+import { RepuestoCard } from "@/components/RepuestoCard";
+import { SearchBar } from "@/components/SearchBar";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { SECCIONES } from "@/constants/data";
+import { TopHeader } from "@/components/TopHeader";
+import { REPUESTOS } from "@/constants/data";
+import { useFavoritos } from "@/hooks/useFavoritos";
+
+const BRANDS = [
+  {
+    id: "vw",
+    name: "Volkswagen",
+    logo: require("@/assets/images/logos/vw.png"),
+  },
+  {
+    id: "renault",
+    name: "Renault",
+    logo: require("@/assets/images/logos/renault.png"),
+  },
+  {
+    id: "chevrolet",
+    name: "Chevrolet",
+    logo: require("@/assets/images/logos/chevrolet.jpg"),
+  },
+  {
+    id: "ford",
+    name: "Ford",
+    logo: require("@/assets/images/logos/ford.png"),
+  },
+  {
+    id: "toyota",
+    name: "Toyota",
+    logo: require("@/assets/images/logos/toyota.jpg"),
+  },
+  {
+    id: "fiat",
+    name: "Fiat",
+    logo: require("@/assets/images/logos/fiat.jpg"),
+  },
+];
 
 export default function HomeScreen() {
+  const [searchText, setSearchText] = useState("");
+  const { toggleFavorito, isFavorito } = useFavoritos();
+
+  // Filtrado de repuestos en tiempo real para la barra de búsqueda en Home
+  const searchResults = searchText.trim()
+    ? REPUESTOS.filter((r) => {
+        const query = searchText.toLowerCase();
+        return (
+          r.nombre.toLowerCase().includes(query) ||
+          r.categoriaNombre.toLowerCase().includes(query) ||
+          r.descripcion.toLowerCase().includes(query) ||
+          (r.marcaAuto && r.marcaAuto.toLowerCase().includes(query)) ||
+          (r.marcaRepuesto && r.marcaRepuesto.toLowerCase().includes(query)) ||
+          (r.aplicacion && r.aplicacion.toLowerCase().includes(query))
+        );
+      })
+    : [];
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <ThemedView style={styles.heroCard}>
-        <ThemedText type="title" style={styles.header}>
-          Repuestos <ThemedText style={styles.brand}>Daitona</ThemedText>
-        </ThemedText>
-        <ThemedText style={styles.heroSub}>
-          Tu canal directo para consultar catálogo, precios y repuestos de todas las marcas.
-        </ThemedText>
-      </ThemedView>
+    <SafeAreaView style={styles.safeArea} edges={["top"]}>
+      {/* Top Header Bar for all screens */}
+      <TopHeader />
 
-      <ThemedText type="subtitle" style={styles.sectionHeading}>
-        Secciones Destacadas
-      </ThemedText>
-
-      <View style={styles.grid}>
-        {SECCIONES.map((seccion) => (
-          <Link
-            key={seccion.id}
-            href={{ pathname: "/parts/[id]", params: { id: seccion.id } }}
-            asChild
-          >
-            <Pressable style={({ pressed }) => [styles.gridItem, pressed && styles.pressed]}>
-              <AppImage uri={seccion.imagen} style={styles.gridImage} resizeMode="cover" />
-              <View style={styles.gridOverlay}>
-                <ThemedText style={styles.gridTitle}>{seccion.titulo}</ThemedText>
-              </View>
-            </Pressable>
-          </Link>
-        ))}
-      </View>
-
-      <ThemedView style={styles.infoCard}>
-        <ThemedText type="subtitle" style={styles.infoTitle}>
-          ¿Necesitas asesoramiento?
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+        {/* Subtitle */}
+        <ThemedText style={styles.subtitle}>
+          Encontrá repuestos para estas y más marcas líderes:
         </ThemedText>
-        <ThemedText style={styles.infoText}>
-          Consulta precios y disponibilidad en tiempo real explorando nuestro catálogo o comunicándote con nuestro equipo.
-        </ThemedText>
-        <Link href="/(tabs)/contacto" asChild>
-          <Pressable style={styles.contactBtn}>
-            <ThemedText style={styles.contactBtnText}>Contactar Tienda</ThemedText>
-          </Pressable>
-        </Link>
-      </ThemedView>
-    </ScrollView>
+
+        {/* Brand Logos Grid */}
+        <View style={styles.brandGrid}>
+          {BRANDS.map((brand) => (
+            <Link
+              key={brand.id}
+              href="/(tabs)/catalogo"
+              asChild
+            >
+              <TouchableOpacity style={styles.brandCard} activeOpacity={0.7}>
+                <Image
+                  source={brand.logo}
+                  style={styles.brandLogo}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+            </Link>
+          ))}
+        </View>
+
+        {/* Search Bar en el Inicio */}
+        <SearchBar
+          value={searchText}
+          onChangeText={setSearchText}
+          placeholder="Buscá repuestos por nombre, marca o modelo..."
+          onClear={() => setSearchText("")}
+        />
+
+        {/* Resultados de Búsqueda en Tiempo Real en el Home */}
+        {searchText.trim().length > 0 ? (
+          <View style={styles.searchResultsContainer}>
+            <ThemedText type="subtitle" style={styles.searchResultsTitle}>
+              Resultados de Búsqueda ({searchResults.length}):
+            </ThemedText>
+            {searchResults.length > 0 ? (
+              searchResults.map((item) => (
+                <RepuestoCard
+                  key={item.id}
+                  repuesto={item}
+                  isFavorito={isFavorito(item.id)}
+                  onToggleFavorito={toggleFavorito}
+                />
+              ))
+            ) : (
+              <ThemedView style={styles.emptySearchCard}>
+                <ThemedText type="subtitle">
+                  {`No se encontraron repuestos para "${searchText}"`}
+                </ThemedText>
+                <ThemedText style={styles.emptySearchSub}>
+                  Intenta buscar por otra palabra clave como "distribucion", "frenos", "filtros" o por marca.
+                </ThemedText>
+              </ThemedView>
+            )}
+          </View>
+        ) : (
+          /* Call to Action por defecto cuando no hay búsqueda activa */
+          <ThemedView style={styles.actionCard}>
+            <View style={styles.actionHeader}>
+              <Ionicons name="book-outline" size={24} color="#d32f2f" style={{ marginRight: 8 }} />
+              <ThemedText type="subtitle" style={styles.actionTitle}>
+                Catálogo de Repuestos
+              </ThemedText>
+            </View>
+            <ThemedText style={styles.actionText}>
+              Explorá nuestras secciones completas de Motor, Suspensión, Frenos y Carrocería con precios y disponibilidad en stock.
+            </ThemedText>
+            <Link href="/(tabs)/catalogo" asChild>
+              <Pressable style={styles.actionButton}>
+                <ThemedText style={styles.actionButtonText}>
+                  Ver Catálogo Completo →
+                </ThemedText>
+              </Pressable>
+            </Link>
+          </ThemedView>
+        )}
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#f7f7f9",
+  },
   container: {
-    padding: 16,
-    paddingBottom: 32,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 40,
+    alignItems: "center",
   },
-  heroCard: {
-    backgroundColor: "#1a1a1a",
-    borderRadius: 12,
-    padding: 20,
+  subtitle: {
+    fontSize: 17,
+    fontWeight: "600",
+    textAlign: "center",
+    color: "#222222",
+    lineHeight: 24,
     marginBottom: 20,
+    paddingHorizontal: 10,
   },
-  header: {
-    fontSize: 28,
-    color: "#ffffff",
-    marginBottom: 8,
-  },
-  brand: {
-    color: "#c00",
-    fontSize: 28,
-    fontWeight: "bold",
-    lineHeight: 32,
-  },
-  heroSub: {
-    color: "#cccccc",
-    fontSize: 15,
-    lineHeight: 22,
-  },
-  sectionHeading: {
-    fontSize: 20,
-    marginBottom: 12,
-  },
-  grid: {
+  brandGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
-    marginBottom: 20,
-  },
-  gridItem: {
-    width: "48%",
-    height: 120,
-    borderRadius: 10,
-    overflow: "hidden",
-    marginBottom: 12,
-    position: "relative",
-    backgroundColor: "#000",
-  },
-  pressed: {
-    opacity: 0.8,
-  },
-  gridImage: {
     width: "100%",
-    height: "100%",
-    opacity: 0.85,
+    gap: 12,
+    marginBottom: 24,
   },
-  gridOverlay: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 8,
-    backgroundColor: "rgba(0,0,0,0.6)",
-  },
-  gridTitle: {
-    color: "#ffffff",
-    fontWeight: "bold",
-    fontSize: 13,
-  },
-  infoCard: {
+  brandCard: {
+    width: "30%",
+    height: 90,
     backgroundColor: "#ffffff",
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 14,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#e8e8e8",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
     elevation: 2,
   },
-  infoTitle: {
-    fontSize: 18,
-    color: "#1a1a1a",
-    marginBottom: 6,
+  brandLogo: {
+    width: 60,
+    height: 50,
   },
-  infoText: {
+  searchResultsContainer: {
+    width: "100%",
+    marginTop: 10,
+  },
+  searchResultsTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#111111",
+    marginBottom: 12,
+  },
+  emptySearchCard: {
+    padding: 20,
+    alignItems: "center",
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    marginTop: 6,
+  },
+  emptySearchSub: {
+    fontSize: 14,
+    color: "#666666",
+    textAlign: "center",
+    marginTop: 8,
+  },
+  actionCard: {
+    width: "100%",
+    backgroundColor: "#ffffff",
+    borderRadius: 14,
+    padding: 18,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: "#e8e8e8",
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+  },
+  actionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  actionTitle: {
+    fontSize: 18,
+    color: "#111111",
+  },
+  actionText: {
     fontSize: 14,
     color: "#555555",
     lineHeight: 20,
-    marginBottom: 12,
+    marginBottom: 14,
   },
-  contactBtn: {
-    backgroundColor: "#c00",
-    paddingVertical: 10,
-    borderRadius: 8,
+  actionButton: {
+    backgroundColor: "#d32f2f",
+    borderRadius: 10,
+    paddingVertical: 12,
     alignItems: "center",
   },
-  contactBtnText: {
+  actionButtonText: {
     color: "#ffffff",
     fontWeight: "bold",
+    fontSize: 15,
   },
 });

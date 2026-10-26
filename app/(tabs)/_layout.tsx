@@ -1,8 +1,6 @@
 import { Tabs } from "expo-router";
 import React from "react";
 
-import { HapticTab } from "@/components/haptic-tab";
-import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
@@ -15,57 +13,14 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
-        tabBarButton: HapticTab,
+        tabBarStyle: { display: "none" },
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Inicio",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="house.fill" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="catalogo"
-        options={{
-          title: "Catálogo",
-          tabBarStyle: { display: "none" },
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="book.closed" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="favoritos"
-        options={{
-          title: "Favoritos",
-          tabBarIcon: ({ focused }) => (
-            <IconSymbol
-              size={28}
-              name="star.fill"
-              color={focused ? "#FFD700" : "#888888"}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="contacto"
-        options={{
-          title: "Contacto",
-          tabBarStyle: { display: "none" },
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="phone.fill" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          href: null,
-        }}
-      />
+      <Tabs.Screen name="index" options={{ title: "Inicio" }} />
+      <Tabs.Screen name="catalogo" options={{ title: "Catálogo" }} />
+      <Tabs.Screen name="favoritos" options={{ title: "Favoritos" }} />
+      <Tabs.Screen name="contacto" options={{ title: "Contacto" }} />
+      <Tabs.Screen name="explore" options={{ href: null }} />
     </Tabs>
   );
 }

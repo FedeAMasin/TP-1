@@ -8,10 +8,12 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppImage } from "@/components/AppImage";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { TopHeader } from "@/components/TopHeader";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { REPUESTOS } from "@/constants/data";
 import { useFavoritos } from "@/hooks/useFavoritos";
@@ -34,14 +36,17 @@ export default function RepuestoDetailScreen() {
 
   if (!repuesto) {
     return (
-      <ThemedView style={styles.errorContainer}>
-        <ThemedText type="subtitle">Repuesto no encontrado</ThemedText>
-        <Link href="/(tabs)/catalogo" asChild style={styles.errorLink}>
-          <Pressable style={styles.button}>
-            <ThemedText style={styles.buttonText}>Volver al Catálogo</ThemedText>
-          </Pressable>
-        </Link>
-      </ThemedView>
+      <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
+        <TopHeader showBackButton={true} />
+        <ThemedView style={styles.errorContainer}>
+          <ThemedText type="subtitle">Repuesto no encontrado</ThemedText>
+          <Link href="/(tabs)/catalogo" asChild style={styles.errorLink}>
+            <Pressable style={styles.button}>
+              <ThemedText style={styles.buttonText}>Volver al Catálogo</ThemedText>
+            </Pressable>
+          </Link>
+        </ThemedView>
+      </SafeAreaView>
     );
   }
 
@@ -83,73 +88,79 @@ export default function RepuestoDetailScreen() {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          title: repuesto.nombre,
-          headerBackTitle: "Volver",
-          headerTintColor: "#c00",
-        }}
-      />
-      <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.imageCard}>
-          <AppImage
-            uri={repuesto.imagen}
-            style={styles.image}
-            resizeMode="cover"
-          />
-          <View style={styles.categoryBadge}>
-            <ThemedText style={styles.categoryText}>
-              {repuesto.categoriaNombre}
-            </ThemedText>
+      <Stack.Screen options={{ headerShown: false }} />
+      <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
+        <TopHeader showBackButton={true} />
+
+        <ScrollView contentContainerStyle={styles.container}>
+          <View style={styles.imageCard}>
+            <AppImage
+              uri={repuesto.imagen}
+              style={styles.image}
+              resizeMode="cover"
+            />
+            <View style={styles.categoryBadge}>
+              <ThemedText style={styles.categoryText}>
+                {repuesto.categoriaNombre}
+              </ThemedText>
+            </View>
+
+            <Pressable
+              style={styles.favBtn}
+              onPress={() => toggleFavorito(repuesto.id)}
+            >
+              <IconSymbol
+                size={24}
+                name={favoritoActivo ? "star.fill" : "star"}
+                color={favoritoActivo ? "#FFD700" : "#ffffff"}
+              />
+            </Pressable>
           </View>
 
-          <Pressable
-            style={styles.favBtn}
-            onPress={() => toggleFavorito(repuesto.id)}
-          >
-            <IconSymbol
-              size={24}
-              name={favoritoActivo ? "star.fill" : "star"}
-              color={favoritoActivo ? "#FFD700" : "#ffffff"}
-            />
-          </Pressable>
-        </View>
+          <ThemedView style={styles.detailsCard}>
+            <ThemedText type="title" style={styles.title}>
+              {repuesto.nombre}
+            </ThemedText>
 
-        <ThemedView style={styles.detailsCard}>
-          <ThemedText type="title" style={styles.title}>
-            {repuesto.nombre}
-          </ThemedText>
+            <ThemedText style={styles.price}>
+              $ {repuesto.precio.toLocaleString("es-AR")}
+            </ThemedText>
 
-          <ThemedText style={styles.codeText}>
-            Código de Repuesto: #{repuesto.id}
-          </ThemedText>
+            <ThemedText style={styles.sectionHeader}>Descripción</ThemedText>
+            <ThemedText style={styles.description}>
+              {repuesto.descripcion}
+            </ThemedText>
 
-          <ThemedText style={styles.price}>
-            $ {repuesto.precio.toLocaleString("es-AR")}
-          </ThemedText>
+            {repuesto.requiereLado && (
+              <View style={styles.ladoSection}>
+                <ThemedText style={styles.sectionHeader}>
+                  Selección de Lado Requerida ⚙️
+                </ThemedText>
+                <ThemedText style={styles.ladoNotice}>
+                  Este repuesto depende del lado del vehículo. Por favor indica qué lado necesitas:
+                </ThemedText>
 
-          {/* Selección de Lado si aplica */}
-          {repuesto.requiereLado && (
-            <View style={styles.sideSelectionContainer}>
-              <ThemedText type="subtitle" style={styles.sideTitle}>
-                Seleccionar Lado:
-              </ThemedText>
-              <View style={styles.sideButtonsRow}>
                 {OPCIONES_LADO.map((opcion) => {
                   const isSelected = ladoSeleccionado === opcion.label;
                   return (
                     <Pressable
                       key={opcion.id}
                       style={[
-                        styles.sideChip,
-                        isSelected && styles.sideChipSelected,
+                        styles.radioOption,
+                        isSelected && styles.radioOptionSelected,
                       ]}
                       onPress={() => setLadoSeleccionado(opcion.label)}
                     >
+                      <View
+                        style={[
+                          styles.radioCircle,
+                          isSelected && styles.radioCircleSelected,
+                        ]}
+                      />
                       <ThemedText
                         style={[
-                          styles.sideChipText,
-                          isSelected && styles.sideChipTextSelected,
+                          styles.radioText,
+                          isSelected && styles.radioTextSelected,
                         ]}
                       >
                         {opcion.label}
@@ -158,58 +169,45 @@ export default function RepuestoDetailScreen() {
                   );
                 })}
               </View>
-            </View>
-          )}
+            )}
 
-          <View style={styles.divider} />
-
-          <ThemedText type="subtitle" style={styles.sectionTitle}>
-            Descripción
-          </ThemedText>
-          <ThemedText style={styles.description}>
-            {repuesto.descripcion}
-          </ThemedText>
-
-          <View style={styles.divider} />
-
-          <Pressable
-            style={({ pressed }) => [
-              styles.contactButton,
-              pressed && styles.buttonPressed,
-            ]}
-            onPress={handleContactWhatsApp}
-          >
-            <ThemedText style={styles.contactButtonText}>
-              Consultar Disponibilidad por WhatsApp
-            </ThemedText>
-          </Pressable>
-        </ThemedView>
-      </ScrollView>
+            <Pressable style={styles.buyBtn} onPress={handleContactWhatsApp}>
+              <ThemedText style={styles.buyBtnText}>
+                📲 Consultar por WhatsApp
+              </ThemedText>
+            </Pressable>
+          </ThemedView>
+        </ScrollView>
+      </SafeAreaView>
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#f7f7f9",
+  },
   container: {
     padding: 16,
     paddingBottom: 32,
   },
   errorContainer: {
     flex: 1,
-    padding: 24,
     justifyContent: "center",
     alignItems: "center",
+    padding: 20,
   },
   errorLink: {
     marginTop: 16,
   },
   imageCard: {
     backgroundColor: "#ffffff",
-    borderRadius: 12,
+    borderRadius: 14,
     overflow: "hidden",
     marginBottom: 16,
     position: "relative",
-    elevation: 2,
+    elevation: 3,
   },
   image: {
     width: "100%",
@@ -219,9 +217,9 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 12,
     left: 12,
-    backgroundColor: "#c00",
+    backgroundColor: "#1a1a1a",
     paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: 5,
     borderRadius: 8,
   },
   categoryText: {
@@ -234,110 +232,108 @@ const styles = StyleSheet.create({
     top: 12,
     right: 12,
     backgroundColor: "rgba(0,0,0,0.6)",
-    width: 40,
-    height: 40,
+    padding: 8,
     borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
   },
   detailsCard: {
     backgroundColor: "#ffffff",
-    borderRadius: 12,
+    borderRadius: 14,
     padding: 18,
     elevation: 2,
+    borderWidth: 1,
+    borderColor: "#e8e8e8",
   },
   title: {
     fontSize: 22,
     fontWeight: "bold",
-    color: "#1a1a1a",
-    marginBottom: 4,
-  },
-  codeText: {
-    fontSize: 13,
-    color: "#888888",
-    marginBottom: 12,
+    color: "#111111",
+    marginBottom: 8,
   },
   price: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: "bold",
     color: "#c00",
-    marginBottom: 12,
+    marginBottom: 16,
   },
-  sideSelectionContainer: {
-    backgroundColor: "#f9f9f9",
-    borderRadius: 10,
-    padding: 12,
-    marginVertical: 10,
-    borderWidth: 1,
-    borderColor: "#e0e0e0",
-  },
-  sideTitle: {
+  sectionHeader: {
     fontSize: 16,
-    color: "#1a1a1a",
-    marginBottom: 8,
-  },
-  sideButtonsRow: {
-    gap: 8,
-  },
-  sideChip: {
-    backgroundColor: "#ffffff",
-    borderColor: "#cccccc",
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-  },
-  sideChipSelected: {
-    backgroundColor: "#c00",
-    borderColor: "#c00",
-  },
-  sideChipText: {
-    fontSize: 14,
-    color: "#333333",
-    fontWeight: "500",
-  },
-  sideChipTextSelected: {
-    color: "#ffffff",
     fontWeight: "bold",
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#eeeeee",
-    marginVertical: 14,
-  },
-  sectionTitle: {
-    fontSize: 18,
     color: "#1a1a1a",
-    marginBottom: 8,
+    marginBottom: 6,
   },
   description: {
-    fontSize: 15,
-    color: "#444444",
+    fontSize: 14,
+    color: "#555555",
     lineHeight: 22,
+    marginBottom: 20,
   },
-  contactButton: {
-    backgroundColor: "#25D366",
+  ladoSection: {
+    backgroundColor: "#fff8f8",
+    borderColor: "#ffcccc",
+    borderWidth: 1,
     borderRadius: 10,
-    paddingVertical: 14,
+    padding: 14,
+    marginBottom: 20,
+  },
+  ladoNotice: {
+    fontSize: 13,
+    color: "#666666",
+    marginBottom: 12,
+  },
+  radioOption: {
+    flexDirection: "row",
     alignItems: "center",
-    marginTop: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+    backgroundColor: "#ffffff",
+    marginBottom: 8,
   },
-  buttonPressed: {
-    opacity: 0.85,
+  radioOptionSelected: {
+    borderColor: "#c00",
+    backgroundColor: "#fff0f0",
   },
-  contactButtonText: {
+  radioCircle: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 2,
+    borderColor: "#888888",
+    marginRight: 10,
+  },
+  radioCircleSelected: {
+    borderColor: "#c00",
+    backgroundColor: "#c00",
+  },
+  radioText: {
+    fontSize: 14,
+    color: "#333333",
+  },
+  radioTextSelected: {
+    fontWeight: "bold",
+    color: "#c00",
+  },
+  buyBtn: {
+    backgroundColor: "#25D366",
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  buyBtnText: {
     color: "#ffffff",
     fontWeight: "bold",
     fontSize: 16,
   },
   button: {
     backgroundColor: "#c00",
-    paddingHorizontal: 16,
+    paddingHorizontal: 18,
     paddingVertical: 10,
     borderRadius: 8,
   },
   buttonText: {
-    color: "#fff",
+    color: "#ffffff",
     fontWeight: "bold",
   },
 });

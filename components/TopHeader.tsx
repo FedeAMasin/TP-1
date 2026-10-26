@@ -96,6 +96,14 @@ export function TopHeader({ showBackButton = false }: TopHeaderProps) {
 
             <TouchableOpacity
               style={styles.menuItem}
+              onPress={() => navigateTo("/(tabs)/favoritos")}
+            >
+              <Ionicons name="star-outline" size={22} color="#d32f2f" style={styles.menuIcon} />
+              <ThemedText style={styles.menuItemText}>Favoritos</ThemedText>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.menuItem}
               onPress={() => navigateTo("/(tabs)/contacto")}
             >
               <Ionicons name="call-outline" size={22} color="#d32f2f" style={styles.menuIcon} />
