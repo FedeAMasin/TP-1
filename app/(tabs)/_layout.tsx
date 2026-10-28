@@ -1,8 +1,6 @@
 import { Tabs } from "expo-router";
 import React from "react";
 
-import { HapticTab } from "@/components/haptic-tab";
-import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
@@ -11,12 +9,14 @@ export default function TabLayout() {
 
   return (
     <Tabs
+      initialRouteName="index"
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
-        tabBarButton: HapticTab,
+        tabBarStyle: { display: "none" },
       }}
     >
+<<<<<<< HEAD
       <Tabs.Screen
         name="index"
         options={{
@@ -44,6 +44,13 @@ export default function TabLayout() {
           ),
         }}
       />
+=======
+      <Tabs.Screen name="index" options={{ title: "Inicio" }} />
+      <Tabs.Screen name="catalogo" options={{ title: "Catálogo" }} />
+      <Tabs.Screen name="favoritos" options={{ title: "Favoritos" }} />
+      <Tabs.Screen name="contacto" options={{ title: "Contacto" }} />
+      <Tabs.Screen name="explore" options={{ href: null }} />
+>>>>>>> 7a3b1ae94d83fc1eb251f198f2bfd4ba0ff24c72
     </Tabs>
   );
 }
