@@ -1,7 +1,8 @@
 import { Link, Stack, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Alert,
+  Image,
   Linking,
   Pressable,
   ScrollView,
@@ -10,13 +11,15 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { AppImage } from "@/components/AppImage";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { TopHeader } from "@/components/TopHeader";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { REPUESTOS } from "@/constants/data";
-import { useFavoritos } from "@/hooks/useFavoritos";
+
+// Componentes desactivados temporalmente porque no están en GitHub:
+// import { useFavoritos } from "@/hooks/useFavoritos";
+// import { AppImage } from "@/components/AppImage";
 
 const OPCIONES_LADO = [
   { id: "izquierdo", label: "👈 Lado Izquierdo (Conductor)" },
@@ -26,7 +29,7 @@ const OPCIONES_LADO = [
 
 export default function RepuestoDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { isFavorito, toggleFavorito } = useFavoritos();
+  // const { isFavorito, toggleFavorito } = useFavoritos();
 
   const repuesto = REPUESTOS.find((r) => r.id === id);
 
@@ -50,7 +53,9 @@ export default function RepuestoDetailScreen() {
     );
   }
 
-  const favoritoActivo = isFavorito(repuesto.id);
+  // Desactivado temporalmente
+  // const favoritoActivo = isFavorito(repuesto.id);
+  const favoritoActivo = false;
 
   const handleContactWhatsApp = () => {
     let mensaje = `Hola Daitona Repuestos, quisiera consultar sobre el producto: ${repuesto.nombre}`;
@@ -94,21 +99,20 @@ export default function RepuestoDetailScreen() {
 
         <ScrollView contentContainerStyle={styles.container}>
           <View style={styles.imageCard}>
-            <AppImage
-              uri={repuesto.imagen}
+            
+            <Image
+              source={{ uri: repuesto.imagen }}
               style={styles.image}
               resizeMode="cover"
             />
+            
             <View style={styles.categoryBadge}>
               <ThemedText style={styles.categoryText}>
                 {repuesto.categoriaNombre}
               </ThemedText>
             </View>
 
-            <Pressable
-              style={styles.favBtn}
-              onPress={() => toggleFavorito(repuesto.id)}
-            >
+            <Pressable style={styles.favBtn}>
               <IconSymbol
                 size={24}
                 name={favoritoActivo ? "star.fill" : "star"}

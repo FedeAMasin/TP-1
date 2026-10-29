@@ -1,124 +1,47 @@
-import { Link } from "expo-router";
-import React, { useState } from "react";
-import {
-  FlatList,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View,
-} from "react-native";
+import React from "react";
+import { Image, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { AppImage } from "@/components/AppImage";
-import { RepuestoCard } from "@/components/RepuestoCard";
-import { SearchBar } from "@/components/SearchBar";
+// Importaciones de tus compañeros (sin el AppImage que rompe la app)
 import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
-import { TopHeader } from "@/components/TopHeader";
-import { REPUESTOS, SECCIONES } from "@/constants/data";
-import { useFavoritos } from "@/hooks/useFavoritos";
 
 export default function CatalogoScreen() {
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const { toggleFavorito, isFavorito } = useFavoritos();
-
-  // Filtrado dinámico por búsqueda
-  const repuestosFiltrados = searchQuery.trim()
-    ? REPUESTOS.filter(
-        (r) =>
-          r.nombre.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          r.categoriaNombre.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          r.descripcion.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : [];
-
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top"]}>
-      {/* Sticky Header Bar with Hamburger Menu & DAYTONA Logo */}
-      <TopHeader />
-
-      <View style={styles.container}>
-        {/* Barra de búsqueda en tiempo real */}
-        <SearchBar
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholder="Buscar repuesto por nombre o categoría..."
-          onClear={() => setSearchQuery("")}
-        />
-
-        {/* Modo Búsqueda Activa */}
-        {searchQuery.trim().length > 0 ? (
-          <FlatList
-            data={repuestosFiltrados}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={styles.listContent}
-            renderItem={({ item }) => (
-              <RepuestoCard
-                repuesto={item}
-                isFavorito={isFavorito(item.id)}
-                onToggleFavorito={toggleFavorito}
-              />
-            )}
-            ListEmptyComponent={
-              <ThemedView style={styles.emptySearch}>
-                <ThemedText type="subtitle">
-                  {`No se encontraron repuestos para "${searchQuery}"`}
-                </ThemedText>
-                <ThemedText style={styles.emptySub}>
-                  Intenta buscar con otra palabra clave o explora las categorías.
-                </ThemedText>
-              </ThemedView>
-            }
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView contentContainerStyle={styles.container}>
+        
+        {/* Usamos el componente Image oficial de React Native en lugar de AppImage */}
+        <View style={styles.card}>
+          <Image 
+            source={{ uri: 'https://i.imgur.com/example-motor.jpg' }} // Aquí iría la ruta a la foto real del motor
+            style={styles.image} 
+            resizeMode="cover" 
           />
-        ) : (
-          /* Modo Lista de Secciones */
-          <ScrollView contentContainerStyle={styles.sectionsContent}>
-            {SECCIONES.map((seccion) => {
-              const cantidad = REPUESTOS.filter(
-                (r) => r.categoriaId === seccion.id
-              ).length;
+          <View style={styles.cardContent}>
+            <ThemedText style={styles.title}>Motor</ThemedText>
+            <ThemedText style={styles.description}>
+              Partes del motor: pistones, bielas, árbol de levas y más.
+            </ThemedText>
+            <ThemedText style={styles.link}>Ver detalles</ThemedText>
+          </View>
+        </View>
 
-              return (
-                <ThemedView key={seccion.id} style={styles.card}>
-                  <Link
-                    href={{ pathname: "/parts/[id]", params: { id: seccion.id } }}
-                    asChild
-                  >
-                    <Pressable style={({ pressed }) => [pressed && styles.pressed]}>
-                      <View style={styles.imageContainer}>
-                        <AppImage
-                          uri={seccion.imagen}
-                          style={styles.image}
-                          resizeMode="cover"
-                        />
-                        <View style={styles.badgeContainer}>
-                          <ThemedText style={styles.badgeText}>
-                            {cantidad} {cantidad === 1 ? "repuesto" : "repuestos"}
-                          </ThemedText>
-                        </View>
-                      </View>
+        <View style={styles.card}>
+          <Image 
+            source={{ uri: 'https://i.imgur.com/example-suspension.jpg' }} 
+            style={styles.image} 
+            resizeMode="cover" 
+          />
+          <View style={styles.cardContent}>
+            <ThemedText style={styles.title}>Suspensión</ThemedText>
+            <ThemedText style={styles.description}>
+              Amortiguadores y componentes de la suspensión.
+            </ThemedText>
+            <ThemedText style={styles.link}>Ver detalles</ThemedText>
+          </View>
+        </View>
 
-                      <View style={styles.cardContent}>
-                        <ThemedText type="subtitle" style={styles.cardTitle}>
-                          {seccion.titulo}
-                        </ThemedText>
-                        <ThemedText style={styles.cardDescription}>
-                          {seccion.descripcion}
-                        </ThemedText>
-                        <View style={styles.actionRow}>
-                          <ThemedText type="defaultSemiBold" style={styles.linkText}>
-                            Ver repuestos →
-                          </ThemedText>
-                        </View>
-                      </View>
-                    </Pressable>
-                  </Link>
-                </ThemedView>
-              );
-            })}
-          </ScrollView>
-        )}
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -126,88 +49,44 @@ export default function CatalogoScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: '#ffffff',
   },
   container: {
-    flex: 1,
     padding: 16,
-    paddingBottom: 0,
-  },
-  listContent: {
-    paddingBottom: 32,
-  },
-  sectionsContent: {
-    paddingBottom: 32,
   },
   card: {
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
-    overflow: "hidden",
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
     marginBottom: 16,
-    elevation: 3,
-    shadowColor: "#000",
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    elevation: 2, // Sombra para Android
+    shadowColor: '#000', // Sombra para iOS
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
-  pressed: {
-    opacity: 0.85,
-  },
-  imageContainer: {
-    position: "relative",
-  },
   image: {
-    width: "100%",
-    height: 160,
-  },
-  badgeContainer: {
-    position: "absolute",
-    top: 12,
-    right: 12,
-    backgroundColor: "rgba(0, 0, 0, 0.75)",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  badgeText: {
-    color: "#ffffff",
-    fontSize: 12,
-    fontWeight: "600",
+    width: '100%',
+    height: 180,
   },
   cardContent: {
-    padding: 14,
+    padding: 16,
   },
-  cardTitle: {
-    fontSize: 20,
-    color: "#1a1a1a",
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
     marginBottom: 4,
   },
-  cardDescription: {
+  description: {
     fontSize: 14,
-    color: "#555555",
-    lineHeight: 20,
-    marginBottom: 10,
+    color: '#666666',
+    marginBottom: 12,
   },
-  actionRow: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-  linkText: {
-    color: "#c00",
-    fontSize: 15,
-  },
-  emptySearch: {
-    padding: 24,
-    alignItems: "center",
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
-    marginTop: 12,
-  },
-  emptySub: {
+  link: {
     fontSize: 14,
-    color: "#666",
-    textAlign: "center",
-    marginTop: 8,
-  },
+    fontWeight: 'bold',
+    color: '#000000',
+  }
 });

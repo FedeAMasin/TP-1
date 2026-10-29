@@ -1,23 +1,28 @@
+import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Image,
   Pressable,
   ScrollView,
   StyleSheet,
+  Text // Agregado temporalmente
+  ,
+
+
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
 
-import { RepuestoCard } from "@/components/RepuestoCard";
-import { SearchBar } from "@/components/SearchBar";
+// Componentes desactivados temporalmente porque no están en GitHub:
+// import { RepuestoCard } from "@/components/RepuestoCard";
+// import { SearchBar } from "@/components/SearchBar";
+
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { TopHeader } from "@/components/TopHeader";
 import { REPUESTOS } from "@/constants/data";
-import { useFavoritos } from "@/hooks/useFavoritos";
 
 const BRANDS = [
   {
@@ -54,9 +59,8 @@ const BRANDS = [
 
 export default function HomeScreen() {
   const [searchText, setSearchText] = useState("");
-  const { toggleFavorito, isFavorito } = useFavoritos();
+  // const { toggleFavorito, isFavorito } = useFavoritos();
 
-  // Filtrado de repuestos en tiempo real para la barra de búsqueda en Home
   const searchResults = searchText.trim()
     ? REPUESTOS.filter((r) => {
         const query = searchText.toLowerCase();
@@ -73,16 +77,13 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
-      {/* Top Header Bar for all screens */}
       <TopHeader />
 
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-        {/* Subtitle */}
         <ThemedText style={styles.subtitle}>
           Encontrá repuestos para estas y más marcas líderes:
         </ThemedText>
 
-        {/* Brand Logos Grid */}
         <View style={styles.brandGrid}>
           {BRANDS.map((brand) => (
             <Link
@@ -101,15 +102,14 @@ export default function HomeScreen() {
           ))}
         </View>
 
-        {/* Search Bar en el Inicio */}
-        <SearchBar
+        {/* Buscador oculto temporalmente */}
+        {/* <SearchBar
           value={searchText}
           onChangeText={setSearchText}
           placeholder="Buscá repuestos por nombre, marca o modelo..."
           onClear={() => setSearchText("")}
-        />
+        /> */}
 
-        {/* Resultados de Búsqueda en Tiempo Real en el Home */}
         {searchText.trim().length > 0 ? (
           <View style={styles.searchResultsContainer}>
             <ThemedText type="subtitle" style={styles.searchResultsTitle}>
@@ -117,12 +117,14 @@ export default function HomeScreen() {
             </ThemedText>
             {searchResults.length > 0 ? (
               searchResults.map((item) => (
-                <RepuestoCard
-                  key={item.id}
-                  repuesto={item}
-                  isFavorito={isFavorito(item.id)}
-                  onToggleFavorito={toggleFavorito}
-                />
+                /* RepuestoCard oculto temporalmente */
+                // <RepuestoCard
+                //   key={item.id}
+                //   repuesto={item}
+                //   isFavorito={isFavorito(item.id)}
+                //   onToggleFavorito={toggleFavorito}
+                // />
+                <Text key={item.id}>- {item.nombre}</Text>
               ))
             ) : (
               <ThemedView style={styles.emptySearchCard}>
@@ -136,7 +138,6 @@ export default function HomeScreen() {
             )}
           </View>
         ) : (
-          /* Call to Action por defecto cuando no hay búsqueda activa */
           <ThemedView style={styles.actionCard}>
             <View style={styles.actionHeader}>
               <Ionicons name="book-outline" size={24} color="#d32f2f" style={{ marginRight: 8 }} />

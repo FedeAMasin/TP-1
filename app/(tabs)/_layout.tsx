@@ -1,6 +1,8 @@
 import { Tabs } from "expo-router";
 import React from "react";
 
+import { HapticTab } from "@/components/haptic-tab";
+import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
@@ -13,14 +15,14 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
-        tabBarStyle: { display: "none" },
+        tabBarButton: HapticTab,
+        // tabBarStyle: { display: "none" }, // OJO: Si tus compañeros agregaron esto, oculta la barra inferior. Si no la ves en el emulador, borra esta línea.
       }}
     >
-<<<<<<< HEAD
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: "Inicio",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="house.fill" color={color} />
           ),
@@ -29,9 +31,18 @@ export default function TabLayout() {
       <Tabs.Screen
         name="catalogo"
         options={{
-          title: "Catalogo",
+          title: "Catálogo",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="book.closed" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="favoritos"
+        options={{
+          title: "Favoritos",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="star.fill" color={color} />
           ),
         }}
       />
@@ -44,13 +55,10 @@ export default function TabLayout() {
           ),
         }}
       />
-=======
-      <Tabs.Screen name="index" options={{ title: "Inicio" }} />
-      <Tabs.Screen name="catalogo" options={{ title: "Catálogo" }} />
-      <Tabs.Screen name="favoritos" options={{ title: "Favoritos" }} />
-      <Tabs.Screen name="contacto" options={{ title: "Contacto" }} />
-      <Tabs.Screen name="explore" options={{ href: null }} />
->>>>>>> 7a3b1ae94d83fc1eb251f198f2bfd4ba0ff24c72
+      <Tabs.Screen 
+        name="explore" 
+        options={{ href: null }} 
+      />
     </Tabs>
   );
 }
