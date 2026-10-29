@@ -9,13 +9,13 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-//import { SearchBar } from "@/components/SearchBar";
+import { SearchBar } from "@/components/SearchBar";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { TopHeader } from "@/components/TopHeader";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { normalizeCategory, REPUESTOS, SECCIONES } from "@/constants/data";
-//import { useFavoritos } from "@/hooks/useFavoritos";
+import { useFavoritos } from "@/hooks/useFavoritos";
 
 interface RepuestoItem {
   id: string;
@@ -338,11 +338,11 @@ const SECTION_NAMES: Record<string, string> = {
 export default function SectionPartsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [filterText, setFilterText] = useState<string>("");
-  //const { toggleFavorito, isFavorito } = //useFavoritos();
+  const { toggleFavorito, isFavorito } = useFavoritos();
   const currentId = id?.toLowerCase() || "";
   const currentNorm = normalizeCategory(currentId);
 
-  // Buscar la sección correspondiente en SECCIONES
+  
   const seccion = SECCIONES.find(
     (s) =>
       normalizeCategory(s.id) === currentNorm ||
@@ -370,7 +370,7 @@ export default function SectionPartsScreen() {
     });
   }
 
-  // Filtrar por texto si hay búsqueda
+  
   const repuestos = filterText.trim()
     ? listaBase.filter(
         (r) =>
